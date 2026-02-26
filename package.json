@@ -17,7 +17,7 @@
         "prod": "npm run build && npm run start"
     },
     "dependencies": {
-        "@discordjs/rest": "^2.0.1",
+        "@discordjs/rest": "^2.6.0",
         "@prisma/client": "^7.4.1",
         "discord.js": "^14.13.0",
         "dotenv": "^16.6.1"
