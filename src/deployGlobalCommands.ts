@@ -4,7 +4,6 @@ import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
-import type ApplicationCommand from './templates/ApplicationCommand.js'
 
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
@@ -12,53 +11,46 @@ const __dirname = path.dirname(__filename)
 export default async function deployGlobalCommands() {
     const TOKEN = process.env.TOKEN
     const CLIENT_ID = process.env.CLIENT_ID
+    const GUILD_ID = process.env.GUILD_ID // On récupère le nouvel ID
 
-    if (!TOKEN || !CLIENT_ID) {
-        console.error('Erreur : TOKEN ou CLIENT_ID manquant dans le .env')
+    if (!TOKEN || !CLIENT_ID || !GUILD_ID) {
+        console.error('❌ Erreur : TOKEN, CLIENT_ID ou GUILD_ID manquant dans le .env')
         return
     }
 
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     const commandsPath = path.join(__dirname, 'commands')
 
-    // 1. On récupère tout ce qu'il y a dans le dossier 'commands' (fichiers et dossiers)
+    // Chargement simplifié pour le test
     const commandItems = readdirSync(commandsPath)
-
     for (const item of commandItems) {
         const itemPath = path.join(commandsPath, item)
-
-        // 2. Si c'est un dossier (ex: moderation)
         if (lstatSync(itemPath).isDirectory()) {
-            const folderFiles = readdirSync(itemPath).filter(
-                (file) => file.endsWith('.js') || file.endsWith('.ts')
-            )
+            const folderFiles = readdirSync(itemPath).filter(f => f.endsWith('.js') || f.endsWith('.ts'))
             for (const file of folderFiles) {
-                const filePath = path.join(itemPath, file)
-                const command: ApplicationCommand = (
-                    await import(`file://${filePath}`)
-                ).default as ApplicationCommand
-                commands.push(command.data.toJSON())
+                const command = (await import(`file://${path.join(itemPath, file)}`)).default
+                if (command?.data) commands.push(command.data.toJSON())
             }
-        }
-        // 3. Si c'est un fichier directement à la racine de 'commands'
-        else if (item.endsWith('.js') || item.endsWith('.ts')) {
-            const command: ApplicationCommand = (
-                await import(`file://${itemPath}`)
-            ).default as ApplicationCommand
-            commands.push(command.data.toJSON())
+        } else if (item.endsWith('.js') || item.endsWith('.ts')) {
+            const command = (await import(`file://${itemPath}`)).default
+            if (command?.data) commands.push(command.data.toJSON())
         }
     }
 
     const rest = new REST({ version: '10' }).setToken(TOKEN)
 
     try {
-        console.log('Started refreshing application (/) commands.')
-        await rest.put(Routes.applicationCommands(CLIENT_ID), { body: [] })
-        await rest.put(Routes.applicationCommands(CLIENT_ID), {
-            body: commands
-        })
-        console.log('Successfully reloaded application (/) commands.')
-    } catch (error) {
-        console.error('Erreur lors du déploiement des commandes :', error)
+        console.log(`⏳ Discord : Envoi de ${commands.length} commandes au serveur ${GUILD_ID}...`)
+        
+        // --- CHANGEMENT ICI : On utilise applicationGuildCommands au lieu de applicationCommands ---
+        await rest.put(
+            Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), 
+            { body: commands }
+        )
+        
+        console.log('✅ Discord : Commandes enregistrées sur le serveur !')
+    } catch (error: any) {
+        console.error('❌ Discord : La requête a échoué !')
+        console.error(error.message)
     }
 }

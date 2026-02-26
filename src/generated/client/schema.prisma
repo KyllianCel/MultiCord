@@ -2,19 +2,21 @@
 // learn more about it in the docs: https://pris.ly/d/prisma-schema
 
 generator client {
-  provider = "prisma-client-js"
-  output   = "../src/generated/client"
+  provider        = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+  output          = "../src/generated/client"
 }
 
 datasource db {
   provider = "sqlite"
+  url      = env("DATABASE_URL")
 }
 
 model Warn {
   id          Int      @id @default(autoincrement())
   guildId     String // ID du serveur
   userId      String // ID de l'utilisateur puni
-  moderatorId String // ID du modérateur qui a mis le warn
+  moderatorId String // ID du modérateur
   reason      String // Raison du warn
   createdAt   DateTime @default(now())
 }

@@ -13,27 +13,29 @@
         "copy": "npx copyfiles -u 1 src/.env src/**/*.json dist/",
         "build": "npm run lint && npm run prettier && npm run clean && npm run compile",
         "start": "npx copyfiles -u 1 \"src/**/*.json\" dist/ && npx copyfiles -f config.json dist/ && node dist/src/index.js",
-        "dev": "npm run clean && tsc-watch --onSuccess \"npm run start\"",
-        "prod": "npm run build && npm run start"
+        "dev": "node --env-file=.env --import tsx --watch src/index.ts",
+        "prod": "npm run build && npm run start",
+        "deploy": "node --env-file=.env --import tsx src/index.ts --deploy"
     },
     "dependencies": {
         "@discordjs/rest": "^2.0.1",
-        "@prisma/client": "^7.4.1",
+        "@libsql/client": "^0.17.0",
+        "@prisma/adapter-libsql": "^6.4.1",
+        "@prisma/client": "^6.4.1",
         "discord.js": "^14.13.0",
-        "dotenv": "^16.6.1"
+        "dotenv": "^16.4.5"
     },
     "devDependencies": {
         "@tsconfig/node20": "^20.1.1",
         "@typescript-eslint/eslint-plugin": "^8.56.1",
         "@typescript-eslint/parser": "^8.56.1",
-        "eslint": "^8.47.0",
         "eslint-config-prettier": "^9.0.0",
         "husky": "^8.0.3",
         "lint-staged": "^14.0.1",
         "prettier": "^3.0.2",
-        "prisma": "^7.4.1",
+        "prisma": "^6.4.1",
         "rimraf": "^5.0.1",
-        "tsc-watch": "^6.0.4",
+        "tsx": "^4.21.0",
         "typescript": "^5.1.6"
     }
 }
