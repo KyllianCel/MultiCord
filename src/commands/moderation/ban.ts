@@ -2,11 +2,11 @@ import {
     SlashCommandBuilder,
     PermissionFlagsBits,
     EmbedBuilder,
-    ChatInputCommandInteraction
+    ChatInputCommandInteraction,
+    GuildMember
 } from 'discord.js'
 
 export default {
-    // 1. Définition de la commande
     data: new SlashCommandBuilder()
         .setName('ban')
         .setDescription('Bannir un membre du serveur')
@@ -19,20 +19,17 @@ export default {
         .addStringOption((option) =>
             option.setName('raison').setDescription('La raison du bannissement')
         )
-        // Seuls ceux qui ont la permission de bannir peuvent voir/utiliser la commande
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 
-    // 2. Logique de la commande
     async execute(interaction: ChatInputCommandInteraction) {
-        const target = interaction.options.getMember('cible')
+        const target = interaction.options.getMember('cible') as GuildMember
         const reason =
             interaction.options.getString('raison') ?? 'Aucune raison fournie'
 
-        // Vérification de sécurité
-        if (!target || !('ban' in target)) {
+        // 1. Vérifications de base
+        if (!target) {
             return interaction.reply({
-                content:
-                    "Je ne peux pas bannir ce membre ou il n'est plus sur le serveur.",
+                content: 'Utilisateur introuvable sur ce serveur.',
                 ephemeral: true
             })
         }
@@ -40,25 +37,39 @@ export default {
         if (!target.bannable) {
             return interaction.reply({
                 content:
-                    "Je n'ai pas les permissions nécessaires pour bannir cet utilisateur (mon rôle est peut-être trop bas).",
+                    'Je ne peux pas bannir ce membre. Mon rôle est probablement trop bas.',
                 ephemeral: true
             })
         }
 
-        // Exécution du bannissement
+        // 2. Envoi du message privé (DM) avant le bannissement
+        try {
+            await target.send(
+                `⚠️ Tu as été banni du serveur **${interaction.guild?.name}**.\n**Raison :** ${reason}`
+            )
+        } catch {
+            // Si les DMs sont fermés, on log l'erreur en console mais on continue
+            console.log(`Impossible d'envoyer un DM à ${target.user.tag}.`)
+        }
+
+        // 3. Exécution du bannissement
         await target.ban({ reason })
 
-        // Création d'un bel Embed pour la réponse
+        // 4. Réponse publique (sous forme d'Embed)
         const embed = new EmbedBuilder()
-            .setColor(0xff0000) // Rouge
+            .setColor(0xff0000)
             .setTitle('🔨 Membre banni')
             .addFields(
-                { name: 'Utilisateur', value: target.user.tag, inline: true }, // .tag au lieu de ${target}
+                {
+                    name: 'Utilisateur',
+                    value: `${target.user.tag}`,
+                    inline: true
+                },
                 {
                     name: 'Modérateur',
-                    value: interaction.user.tag,
+                    value: `${interaction.user.tag}`,
                     inline: true
-                }, // .tag au lieu de ${interaction.user}
+                },
                 { name: 'Raison', value: reason }
             )
             .setTimestamp()

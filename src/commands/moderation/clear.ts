@@ -2,7 +2,8 @@ import {
     SlashCommandBuilder,
     PermissionFlagsBits,
     ChatInputCommandInteraction,
-    EmbedBuilder
+    EmbedBuilder,
+    TextChannel
 } from 'discord.js'
 
 export default {
@@ -17,11 +18,19 @@ export default {
                 .setMinValue(1)
                 .setMaxValue(100)
         )
+        .addUserOption((option) =>
+            option
+                .setName('cible')
+                .setDescription(
+                    'Supprimer uniquement les messages de cet utilisateur (Optionnel)'
+                )
+        )
         .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages),
 
     async execute(interaction: ChatInputCommandInteraction) {
         const amount = interaction.options.getInteger('montant')!
-        const channel = interaction.channel
+        const target = interaction.options.getUser('cible')
+        const channel = interaction.channel as TextChannel
 
         // Sécurité : Vérifier si on est bien dans un salon textuel
         if (!channel || !('bulkDelete' in channel)) {
@@ -33,29 +42,44 @@ export default {
         }
 
         try {
-            // On supprime les messages
-            const deleted = await channel.bulkDelete(amount, true)
+            let messagesToDelete
+
+            if (target) {
+                // LOGIQUE FILTRÉE : On récupère les 100 derniers messages
+                const messages = await channel.messages.fetch({ limit: 100 })
+
+                // On filtre pour ne garder que ceux de la cible et on prend le "montant" demandé
+                messagesToDelete = messages
+                    .filter((m) => m.author.id === target.id)
+                    .toJSON()
+                    .slice(0, amount)
+            }
+
+            // On effectue la suppression
+            // Si target existe, on passe la liste filtrée. Sinon, on passe juste le nombre.
+            const deleted = await channel.bulkDelete(
+                messagesToDelete || amount,
+                true
+            )
 
             const embed = new EmbedBuilder()
-                .setColor(0x3498db) // Bleu
+                .setColor(0x3498db)
                 .setDescription(
-                    `🧹 **${deleted.size}** messages ont été supprimés avec succès.`
+                    target
+                        ? `🧹 **${deleted.size}** messages de **${target.tag}** ont été supprimés.`
+                        : `🧹 **${deleted.size}** messages ont été supprimés.`
                 )
                 .setFooter({ text: "Ce message s'effacera dans 5 secondes." })
 
-            // On répond
             await interaction.reply({ embeds: [embed] })
 
-            // Petit bonus : On supprime la réponse du bot après 5 secondes
-            // pour garder le salon vraiment propre.
             setTimeout(() => {
                 interaction.deleteReply().catch(() => {})
             }, 5000)
-        } catch (error) {
-            console.error(error)
+        } catch {
             return interaction.reply({
                 content:
-                    'Une erreur est survenue : les messages de plus de 14 jours ne peuvent pas être supprimés par cette commande.',
+                    'Erreur : Impossible de supprimer des messages de plus de 14 jours.',
                 ephemeral: true
             })
         }
