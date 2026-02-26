@@ -3,7 +3,9 @@
     "compilerOptions": {
         "resolveJsonModule": true,
         "outDir": "./dist",
-        "module": "ESNext",
-        "esModuleInterop": true
+        "module": "NodeNext",
+        "moduleResolution": "NodeNext",
+        "esModuleInterop": true,
+        "skipLibCheck": true
     }
 }

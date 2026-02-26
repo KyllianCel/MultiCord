@@ -2,14 +2,21 @@ import type MessageCommand from '../templates/MessageCommand.js'
 import Event from '../templates/Event.js'
 import { Events, Message } from 'discord.js'
 import { createRequire } from 'module'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const require = createRequire(import.meta.url)
+
 interface Config {
     prefix: string
     token: string
     clientId: string
 }
 
-const config = require('../config.json') as Config
+// On remonte de DEUX niveaux pour trouver le config.json dans dist/
+const config = require(path.join(__dirname, '../../config.json')) as Config
 
 export default new Event({
     name: Events.MessageCreate,

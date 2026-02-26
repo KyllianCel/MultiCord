@@ -1,13 +1,19 @@
 import MessageCommand from '../templates/MessageCommand.js'
 import { createRequire } from 'module'
+import path from 'path'
+import { fileURLToPath } from 'url'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const require = createRequire(import.meta.url)
+
 interface Config {
     prefix: string
     token: string
     clientId: string
 }
 
-const config = require('../config.json') as Config
+const config = require(path.join(__dirname, '../../config.json')) as Config
 const { OWNER_ID } = process.env
 
 export default new MessageCommand({

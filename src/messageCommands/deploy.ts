@@ -1,29 +1,32 @@
 /* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { readdirSync } from 'fs'
+import path from 'path'
+import { fileURLToPath } from 'url'
 import type ApplicationCommand from '../templates/ApplicationCommand.js'
 import MessageCommand from '../templates/MessageCommand.js'
 import { REST } from '@discordjs/rest'
 import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js'
 import { createRequire } from 'module'
+
+const __filename = fileURLToPath(import.meta.url)
+const __dirname = path.dirname(__filename)
 const require = createRequire(import.meta.url)
+
 interface Config {
     prefix: string
     token: string
     clientId: string
 }
 
-const config = require('../config.json') as Config
-
-const { TOKEN, CLIENT_ID, OWNER_ID } = process.env as {
-    TOKEN: string
-    CLIENT_ID: string
-    OWNER_ID: string
-}
+const config = require(path.join(__dirname, '../../config.json')) as Config
 
 export default new MessageCommand({
     name: 'deploy',
     description: 'Deploys the slash commands',
     async execute(message, args): Promise<void> {
+        // On récupère les variables du .env au moment de l'exécution
+        const { TOKEN, CLIENT_ID, OWNER_ID } = process.env
+
         if (message.author.id !== OWNER_ID) return
 
         if (!args[0]) {
@@ -33,76 +36,61 @@ export default new MessageCommand({
             return
         }
 
-        console.log(`Undeploying commands by ${message.author.tag}!}`)
+        // On définit le chemin absolu vers le dossier des commandes slash
+        // Ce fichier est dans messageCommands, on remonte d'un cran pour aller dans src, puis dans commands
+        const commandsPath = path.join(__dirname, '..', 'commands')
 
-        if (args[0].toLowerCase() === 'global') {
-            // global deployment
+        if (
+            args[0].toLowerCase() === 'global' ||
+            args[0].toLowerCase() === 'guild'
+        ) {
+            console.log(`Deploying commands by ${message.author.tag}!`)
 
             const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
-            const commandFiles: string[] = readdirSync('./commands').filter(
+            const commandFiles: string[] = readdirSync(commandsPath).filter(
                 (file) => file.endsWith('.js') || file.endsWith('.ts')
             )
 
             for (const file of commandFiles) {
+                const filePath = path.join(commandsPath, file)
+                // Utilisation de file:// pour Windows et chemin absolu
                 const command: ApplicationCommand = (
-                    await import(`../commands/${file}`)
+                    await import(`file://${filePath}`)
                 ).default as ApplicationCommand
                 const commandData = command.data.toJSON()
                 commands.push(commandData)
             }
 
-            const rest = new REST({ version: '10' }).setToken(TOKEN)
+            const rest = new REST({ version: '10' }).setToken(TOKEN as string)
 
             try {
                 console.log('Started refreshing application (/) commands.')
 
-                await rest.put(Routes.applicationCommands(CLIENT_ID), {
-                    body: commands
+                if (args[0].toLowerCase() === 'global') {
+                    await rest.put(
+                        Routes.applicationCommands(CLIENT_ID as string),
+                        {
+                            body: commands
+                        }
+                    )
+                } else {
+                    await rest.put(
+                        Routes.applicationGuildCommands(
+                            CLIENT_ID as string,
+                            message.guild?.id as string
+                        ),
+                        { body: commands }
+                    )
+                }
+
+                console.log('Successfully reloaded application (/) commands.')
+                await message.reply({
+                    content: `Successfully deployed ${args[0]}!`
                 })
-
-                console.log('Successfully reloaded application (/) commands.')
             } catch (error) {
                 console.error(error)
+                await message.reply({ content: 'Failed to deploy commands.' })
             }
-
-            await message.reply({ content: 'Deploying!' })
-        } else if (args[0].toLowerCase() === 'guild') {
-            // guild deployment
-
-            const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
-            const commandFiles: string[] = readdirSync('./commands').filter(
-                (file) => file.endsWith('.js') || file.endsWith('.ts')
-            )
-
-            for (const file of commandFiles) {
-                const command: ApplicationCommand = (
-                    await import(`../commands/${file}`)
-                ).default as ApplicationCommand
-                const commandData = command.data.toJSON()
-                commands.push(commandData)
-            }
-
-            const rest = new REST({ version: '10' }).setToken(TOKEN)
-
-            try {
-                console.log('Started refreshing application (/) commands.')
-
-                await rest.put(
-                    Routes.applicationGuildCommands(
-                        CLIENT_ID,
-                        message.guild?.id as string
-                    ),
-                    {
-                        body: commands
-                    }
-                )
-
-                console.log('Successfully reloaded application (/) commands.')
-            } catch (error) {
-                console.error(error)
-            }
-
-            await message.reply({ content: 'Deploying!' })
         }
     }
 })
