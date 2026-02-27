@@ -5,7 +5,7 @@ import {
     ChatInputCommandInteraction
 } from 'discord.js'
 import prisma from '../../database.js'
-import { MessageFlags } from 'discord.js';
+import { MessageFlags } from 'discord.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -67,10 +67,9 @@ export default {
 
             return interaction.reply({ embeds: [embed] })
         } catch (error: any) {
-            console.error("❌ ERREUR PRISMA DÉTAILLÉE :", error)
+            console.error(error)
             return interaction.reply({
-                content:
-                    `Une erreur est survenue : \`${error.message}\``,
+                content: `Une erreur est survenue lors de l'enregistrement du warn dans la base de données.`,
                 flags: [MessageFlags.Ephemeral]
             })
         }

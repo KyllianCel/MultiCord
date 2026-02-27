@@ -116,7 +116,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Kyllian\\Desktop\\Licence 3\\Dossier_projet\\MultiCord\\src\\generated\\client",
+      "value": "C:\\Users\\Kyllian\\Desktop\\Licence_3\\Dossier_projet\\MultiCord\\src\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -132,7 +132,7 @@ const config = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "C:\\Users\\Kyllian\\Desktop\\Licence 3\\Dossier_projet\\MultiCord\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\Kyllian\\Desktop\\Licence_3\\Dossier_projet\\MultiCord\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -146,6 +146,7 @@ const config = {
     "db"
   ],
   "activeProvider": "sqlite",
+  "postinstall": true,
   "inlineDatasources": {
     "db": {
       "url": {

@@ -1,8 +1,13 @@
 {
     "type": "module",
     "lint-staged": {
-        "*.ts": "eslint --cache --fix",
-        "*.{ts,css,md}": "prettier --write"
+        "*.ts": [
+            "npx eslint --cache --fix",
+            "npx prettier --write"
+        ],
+        "*.{ts,css,md,json}": [
+            "npx prettier --write"
+        ]
     },
     "scripts": {
         "prepare": "husky install",
@@ -26,9 +31,11 @@
         "dotenv": "^16.4.5"
     },
     "devDependencies": {
+        "@eslint/js": "^10.0.1",
         "@tsconfig/node20": "^20.1.1",
         "@typescript-eslint/eslint-plugin": "^8.56.1",
         "@typescript-eslint/parser": "^8.56.1",
+        "eslint": "^10.0.2",
         "eslint-config-prettier": "^9.0.0",
         "husky": "^8.0.3",
         "lint-staged": "^14.0.1",
@@ -36,6 +43,7 @@
         "prisma": "^6.4.1",
         "rimraf": "^5.0.1",
         "tsx": "^4.21.0",
-        "typescript": "^5.1.6"
+        "typescript": "^5.1.6",
+        "typescript-eslint": "^8.56.1"
     }
 }
