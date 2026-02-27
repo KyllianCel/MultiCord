@@ -73,6 +73,44 @@ export default {
 
             await interaction.reply({ embeds: [embed] })
 
+            // --- AJOUT LOGS MODÉRATION ---
+            const logChannelId = process.env.LOG_CHANNEL_ID
+            if (logChannelId) {
+                const logChannel =
+                    interaction.guild?.channels.cache.get(logChannelId)
+                if (logChannel?.isTextBased()) {
+                    const logEmbed = new EmbedBuilder()
+                        .setColor(0x3498db)
+                        .setTitle('🧹 Nettoyage de salon')
+                        .addFields(
+                            {
+                                name: 'Salon',
+                                value: `<#${channel.id}>`,
+                                inline: true
+                            },
+                            {
+                                name: 'Modérateur',
+                                value: `${interaction.user.tag}`,
+                                inline: true
+                            },
+                            {
+                                name: 'Montant',
+                                value: `${deleted.size} messages`,
+                                inline: true
+                            }
+                        )
+                        .setTimestamp()
+
+                    if (target)
+                        logEmbed.addFields({
+                            name: 'Cible',
+                            value: `${target.tag}`
+                        })
+
+                    await logChannel.send({ embeds: [logEmbed] })
+                }
+            }
+
             setTimeout(() => {
                 interaction.deleteReply().catch(() => {})
             }, 5000)

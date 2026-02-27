@@ -55,11 +55,12 @@ export default {
         // Conversion des minutes en millisecondes
         const msDuration = duration * 60 * 1000
 
-        // Application du timeout (méthode native Discord.js v14)
+        // Application du timeout
         await target.timeout(msDuration, reason)
 
+        // Création de l'Embed
         const embed = new EmbedBuilder()
-            .setColor(0x707070) // Gris
+            .setColor(0x707070)
             .setTitle('🔇 Membre mis en sourdine')
             .addFields(
                 {
@@ -71,6 +72,16 @@ export default {
                 { name: 'Raison', value: reason }
             )
             .setTimestamp()
+
+        // ENVOI DES LOGS
+        const logChannelId = process.env.LOG_CHANNEL_ID
+        if (logChannelId) {
+            const logChannel =
+                interaction.guild?.channels.cache.get(logChannelId)
+            if (logChannel?.isTextBased()) {
+                await logChannel.send({ embeds: [embed] })
+            }
+        }
 
         return interaction.reply({ embeds: [embed] })
     }

@@ -55,8 +55,9 @@ export default {
         // L'action réelle
         await target.kick(reason)
 
+        // Création de l'Embed
         const embed = new EmbedBuilder()
-            .setColor(0xffa500) // Orange pour le kick (moins grave que le rouge du ban)
+            .setColor(0xffa500)
             .setTitle('👢 Membre expulsé')
             .addFields(
                 {
@@ -72,6 +73,16 @@ export default {
                 { name: 'Raison', value: reason }
             )
             .setTimestamp()
+
+        // ENVOI DES LOGS
+        const logChannelId = process.env.LOG_CHANNEL_ID
+        if (logChannelId) {
+            const logChannel =
+                interaction.guild?.channels.cache.get(logChannelId)
+            if (logChannel?.isTextBased()) {
+                await logChannel.send({ embeds: [embed] })
+            }
+        }
 
         return interaction.reply({ embeds: [embed] })
     }

@@ -55,7 +55,7 @@ export default {
         // 3. Exécution du bannissement
         await target.ban({ reason })
 
-        // 4. Réponse publique (sous forme d'Embed)
+        // 4. Création de l'Embed (Déclaration AVANT les logs)
         const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTitle('🔨 Membre banni')
@@ -74,6 +74,17 @@ export default {
             )
             .setTimestamp()
 
+        // 5. ENVOI DES LOGS (Maintenant l'embed existe !)
+        const logChannelId = process.env.LOG_CHANNEL_ID
+        if (logChannelId) {
+            const logChannel =
+                interaction.guild?.channels.cache.get(logChannelId)
+            if (logChannel?.isTextBased()) {
+                await logChannel.send({ embeds: [embed] })
+            }
+        }
+
+        // 6. Réponse à l'interaction
         return interaction.reply({ embeds: [embed] })
     }
 }
