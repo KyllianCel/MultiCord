@@ -31,7 +31,7 @@ export default {
         const guildId = interaction.guildId!
 
         try {
-            // 1. Enregistrement dans la base de données via Prisma
+            // 1. Enregistrement Base de données
             await prisma.warn.create({
                 data: {
                     userId: target.id,
@@ -41,18 +41,9 @@ export default {
                 }
             })
 
-            // 2. Tentative d'envoi d'un message privé à l'utilisateur
-            try {
-                await target.send(
-                    `⚠️ Tu as reçu un avertissement sur le serveur **${interaction.guild?.name}**.\n**Raison :** ${reason}`
-                )
-            } catch {
-                console.log('DMs fermés pour cet utilisateur.')
-            }
-
-            // 3. Réponse publique avec un Embed
+            // 2. Création de l'Embed (Déclaration AVANT utilisation)
             const embed = new EmbedBuilder()
-                .setColor(0xffff00) // Jaune
+                .setColor(0xffff00)
                 .setTitle('⚠️ Avertissement enregistré')
                 .addFields(
                     { name: 'Utilisateur', value: target.tag, inline: true },
@@ -65,6 +56,26 @@ export default {
                 )
                 .setTimestamp()
 
+            // 3. LOGS (Point 2) - On utilise l'embed ici
+            const logChannelId = process.env.LOG_CHANNEL_ID
+            if (logChannelId) {
+                const logChannel =
+                    interaction.guild?.channels.cache.get(logChannelId)
+                if (logChannel?.isTextBased()) {
+                    await logChannel.send({ embeds: [embed] })
+                }
+            }
+
+            // 4. Message Privé (DM)
+            try {
+                await target.send(
+                    `⚠️ Tu as reçu un warn sur **${interaction.guild?.name}** pour : ${reason}`
+                )
+            } catch {
+                console.log('DMs fermés.')
+            }
+
+            // 5. Réponse à l'interaction
             return interaction.reply({ embeds: [embed] })
         } catch (error: any) {
             console.error(error)
