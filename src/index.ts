@@ -13,7 +13,7 @@ const { TOKEN } = process.env
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// 1. Initialisation immédiate du client
+// 1. Initialisation du client
 global.client = Object.assign(
     new Client({
         intents: [
@@ -21,7 +21,8 @@ global.client = Object.assign(
             GatewayIntentBits.GuildMessages,
             GatewayIntentBits.DirectMessages,
             GatewayIntentBits.MessageContent,
-            GatewayIntentBits.GuildMembers
+            GatewayIntentBits.GuildMembers,
+            GatewayIntentBits.GuildVoiceStates // Ajouté pour la musique plus tard
         ],
         partials: [Partials.Channel]
     }),
@@ -37,30 +38,32 @@ const commandItems = readdirSync(commandsPath)
 
 for (const item of commandItems) {
     const itemPath = path.join(commandsPath, item)
+    
+    // Si c'est un DOSSIER (ex: moderation, util)
     if (lstatSync(itemPath).isDirectory()) {
         const folderFiles = readdirSync(itemPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'))
         for (const file of folderFiles) {
             const filePath = path.join(itemPath, file)
-            const command: ApplicationCommand = (await import(`file://${filePath}`)).default as ApplicationCommand
+            const command: any = (await import(`file://${filePath}`)).default
+            
+            // On définit la catégorie selon le nom du dossier
+            command.category = item 
+            
             client.commands.set(command.data.name, command)
         }
-    } else if (item.endsWith('.js') || item.endsWith('.ts')) {
-        const command: ApplicationCommand = (await import(`file://${itemPath}`)).default as ApplicationCommand
+    } 
+    // Si c'est un FICHIER à la racine de /commands
+    else if (item.endsWith('.js') || item.endsWith('.ts')) {
+        const command: any = (await import(`file://${itemPath}`)).default
+        
+        // Catégorie par défaut
+        command.category = 'Général'
+        
         client.commands.set(command.data.name, command)
     }
 }
 
-// --- Chargement des Message Commands ---
-const msgCommandsPath = path.join(__dirname, 'messageCommands')
-const msgCommandFiles = readdirSync(msgCommandsPath).filter(f => f.endsWith('.js') || f.endsWith('.ts'))
-
-for (const file of msgCommandFiles) {
-    const filePath = path.join(msgCommandsPath, file)
-    const command: MessageCommand = (await import(`file://${filePath}`)).default as MessageCommand
-    client.msgCommands.set(command.name, command)
-}
-
-// --- Chargement des Événements ---
+// --- Le reste du fichier (Events, Login, etc.) reste inchangé ---
 const eventsPath = path.join(__dirname, 'events')
 const eventFiles = readdirSync(eventsPath).filter(f => f.endsWith('.js') || f.endsWith('.ts'))
 
@@ -74,10 +77,8 @@ for (const file of eventFiles) {
     }
 }
 
-// 2. Lancement du bot
 await client.login(TOKEN)
 
-// 3. Déploiement des commandes en arrière-plan après la connexion
 if (process.argv.includes('--deploy')) {
     deployGlobalCommands().catch(err => console.error("❌ Erreur déploiement:", err));
 }
