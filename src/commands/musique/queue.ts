@@ -1,30 +1,33 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, MessageFlags } from 'discord.js';
-import { useQueue } from 'discord-player';
 
 export default {
     data: new SlashCommandBuilder()
         .setName('queue')
-        .setDescription('Affiche la file d\'attente actuelle.'),
+        .setDescription('Affiche la liste des musiques à venir'),
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const queue = useQueue(interaction.guildId!);
+        const client = interaction.client as any;
+        const queue = client.queues.get(interaction.guildId);
 
-        if (!queue || !queue.tracks.data.length) {
-            return interaction.reply({ content: "❌ La file d'attente est vide !", flags: [MessageFlags.Ephemeral] });
+        if (!queue || queue.tracks.length === 0) {
+            return interaction.reply({ content: "❌ La file d'attente est vide.", flags: [MessageFlags.Ephemeral] });
         }
 
-        const currentTrack = queue.currentTrack; // Musique en cours
-        const tracks = queue.tracks.data.slice(0, 10); // 10 prochaines
+        // On prépare l'affichage
+        const nowPlaying = queue.tracks[0];
+        const upcoming = queue.tracks.slice(1, 11); // On affiche les 10 prochaines
 
         const embed = new EmbedBuilder()
-            .setColor('#5865F2')
-            .setTitle('🎶 File d\'attente')
-            .setDescription(`**En cours :** [${currentTrack?.title}](${currentTrack?.url})`)
-            .addFields({ 
-                name: 'À venir :', 
-                value: tracks.map((t, i) => `**${i + 1}.** [${t.title}](${t.url})`).join('\n') || 'Rien d\'autre dans la liste.'
-            })
-            .setTimestamp();
+            .setTitle(`File d'attente pour ${interaction.guild.name}`)
+            .setColor('#00ff00')
+            .addFields(
+                { name: '🎵 En train de jouer', value: `[${nowPlaying.info.title}](${nowPlaying.info.uri})` }
+            );
+
+        if (upcoming.length > 0) {
+            const list = upcoming.map((t, i) => `**${i + 1}.** [${t.info.title}](${t.info.uri})`).join('\n');
+            embed.addFields({ name: '⏭️ À suivre', value: list });
+        }
 
         return interaction.reply({ embeds: [embed] });
     },

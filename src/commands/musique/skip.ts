@@ -1,19 +1,43 @@
 import { ChatInputCommandInteraction, SlashCommandBuilder, MessageFlags } from 'discord.js';
-import { useQueue } from 'discord-player';
 
 export default {
     data: new SlashCommandBuilder()
         .setName('skip')
-        .setDescription('Passe à la musique suivante.'),
+        .setDescription('Passe à la musique suivante'),
 
     async execute(interaction: ChatInputCommandInteraction) {
-        const queue = useQueue(interaction.guildId!);
+        const client = interaction.client as any;
+        const shoukaku = client.shoukaku;
+        const guildId = interaction.guildId!;
 
-        if (!queue || !queue.isPlaying()) {
-            return interaction.reply({ content: "❌ Aucune musique en cours !", flags: [MessageFlags.Ephemeral] });
+        // 1. On récupère le lecteur (player) pour ce serveur
+        const player = shoukaku.players.get(guildId);
+        const queue = client.queues.get(guildId);
+
+        // 2. Vérifications de sécurité
+        if (!player) {
+            return interaction.reply({ 
+                content: "❌ Je ne joue pas de musique actuellement sur ce serveur.", 
+                flags: [MessageFlags.Ephemeral] 
+            });
         }
 
-        queue.node.skip();
-        return interaction.reply(`⏭️ Musique passée par **${interaction.user.username}** !`);
+        if (!queue || queue.tracks.length === 0) {
+            return interaction.reply({ 
+                content: "❌ La file d'attente est vide.", 
+                flags: [MessageFlags.Ephemeral] 
+            });
+        }
+
+        try {
+            // 3. On arrête la piste actuelle
+            // Cela va déclencher l'événement 'end' qu'on a créé dans play.ts
+            await player.stopTrack();
+
+            return interaction.reply(`⏩ Musique passée par **${interaction.user.username}** !`);
+        } catch (e) {
+            console.error(e);
+            return interaction.reply("❌ Erreur lors du skip.");
+        }
     },
 };

@@ -1,61 +1,36 @@
 import { BaseInteraction, Events } from 'discord.js'
-import type ApplicationCommand from '../templates/ApplicationCommand.js'
 import Event from '../templates/Event.js'
 
 export default new Event({
     name: Events.InteractionCreate,
     async execute(interaction: BaseInteraction): Promise<void> {
-        if (interaction.isChatInputCommand()) {
-            if (!client.commands.has(interaction.commandName)) return
+        const client = interaction.client as any;
+
+        // 1. GESTION DE L'AUTOCOMPLÉTION (Doit être AVANT ou EN DEHORS du check ChatInputCommand)
+        if (interaction.isAutocomplete()) {
+            const command = client.commands.get(interaction.commandName);
+            if (!command || !command.autocomplete) return;
+
             try {
-                const command: ApplicationCommand = (await client.commands.get(
-                    interaction.commandName
-                )) as ApplicationCommand
-
-                if (!command.execute) {
-                    console.error(
-                        `Failed to find execution handler for ${command.data.name}`
-                    )
-                    await interaction.reply({
-                        content:
-                            'There was an error while executing this command!',
-                        ephemeral: true
-                    })
-                    return
-                }
-
-                await command.execute(interaction)
+                await command.autocomplete(interaction);
             } catch (error) {
-                console.error(error)
-                await interaction.reply({
-                    content: 'There was an error while executing this command!',
-                    ephemeral: true
-                })
+                console.error("❌ Erreur Autocomplete:", error);
             }
-        } else if (interaction.isAutocomplete()) {
-            if (!client.commands.has(interaction.commandName)) return
+            return; // On s'arrête ici pour une interaction d'autocomplétion
+        }
+
+        // 2. GESTION DES COMMANDES SLASH
+        if (interaction.isChatInputCommand()) {
+            const command = client.commands.get(interaction.commandName);
+            if (!command) return;
 
             try {
-                const command: ApplicationCommand = (await client.commands.get(
-                    interaction.commandName
-                )) as ApplicationCommand
-
-                if (!command.autocomplete) {
-                    console.error(
-                        `Failed to find autocomplete handler for ${command.data.name}`
-                    )
-                    await interaction.respond([
-                        {
-                            name: 'Failed to autocomplete',
-                            value: 'error'
-                        }
-                    ])
-                    return
-                }
-
-                await command.autocomplete(interaction)
+                await command.execute(interaction);
             } catch (error) {
-                console.error(error)
+                console.error(error);
+                const msg = { content: 'Une erreur est survenue !', ephemeral: true };
+                if (interaction.deferred || interaction.replied) await interaction.followUp(msg);
+                else await interaction.reply(msg);
             }
         }
     }
