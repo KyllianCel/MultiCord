@@ -8,6 +8,7 @@ export default new Event({
     async execute(client: Client) {
         console.log(`✅ Logged in as ${client.user?.tag}!`)
 
+        // On nettoie les variables
         const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
         const port = (process.env.LAVALINK_PORT || '2333').toString().trim()
         const password = (
@@ -23,10 +24,11 @@ export default new Event({
             }
         ]
 
-        console.log(`⏳ En attente de Lavalink sur ${host}:${port}...`)
+        setTimeout(() => {
+            console.log(
+                `⚙️ Tentative de connexion Shoukaku sur ${host}:${port}...`
+            )
 
-        // FONCTION DE CONNEXION FORCÉE
-        const connectLavalink = () => {
             try {
                 const shoukaku = new Shoukaku(
                     new Connectors.DiscordJS(client as any),
@@ -34,7 +36,7 @@ export default new Event({
                     {
                         moveOnDisconnect: true,
                         resume: true,
-                        reconnectTries: 100, // On insiste lourdement
+                        reconnectTries: 10,
                         reconnectInterval: 5
                     }
                 )
@@ -42,33 +44,36 @@ export default new Event({
                 ;(client as any).shoukaku = shoukaku
                 ;(client as any).queues = new Map()
 
-                shoukaku.on('ready', (name: string) => {
+                // Événements de diagnostic
+                shoukaku.on('ready', (name) =>
+                    console.log(`⭐ [LAVALINK] ${name} est CONNECTÉ !`)
+                )
+                shoukaku.on('error', (name, err) =>
                     console.log(
-                        `⭐ [LAVALINK] Connexion réussie au nœud : ${name}`
+                        `❌ [LAVALINK] Erreur sur ${name}: ${err.message}`
                     )
-                })
+                )
+                shoukaku.on('debug', (name, info) =>
+                    console.log(`🔍 [DEBUG] ${name}: ${info}`)
+                )
 
-                shoukaku.on('error', (name: string, error: Error) => {
-                    console.error(
-                        `❌ [LAVALINK] Erreur sur ${name}: ${error.message}`
-                    )
-                })
-
-                shoukaku.on('debug', (name: string, info: string) => {
-                    // On log TOUT le debug pour comprendre le blocage
-                    console.log(`🔍 [DEBUG ${name}] ${info}`)
-                })
-            } catch (err) {
-                console.error("❌ Erreur d'initialisation Shoukaku:", err)
+                // Petit scanner d'état interne
+                setInterval(() => {
+                    const node = shoukaku.nodes.get('LocalNode')
+                    if (node) {
+                        console.log(
+                            `📡 État actuel du nœud : ${node.state === 1 ? 'CONNECTÉ' : 'DÉCONNECTÉ (Code: ' + node.state + ')'}`
+                        )
+                    }
+                }, 10000)
+            } catch (e: any) {
+                console.error(
+                    '❌ Crash lors de la création de Shoukaku :',
+                    e.message
+                )
             }
-        }
+        }, 5000)
 
-        // On attend 10 secondes après le boot du bot pour être SÛR que Lavalink a fini
-        setTimeout(() => {
-            console.log('🚀 Lancement de la connexion Shoukaku...')
-            connectLavalink()
-        }, 10000)
-
-        console.log(`🚀 MultiCord est prêt ! (Musique dans 10s)`)
+        console.log(`🚀 MultiCord est prêt !`)
     }
 })
