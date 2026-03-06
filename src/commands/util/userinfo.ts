@@ -5,7 +5,7 @@ import {
     PermissionFlagsBits,
     GuildMember
 } from 'discord.js'
-import prisma from '../../database.js'
+import { prisma } from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()

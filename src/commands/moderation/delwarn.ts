@@ -5,7 +5,7 @@ import {
     ChatInputCommandInteraction,
     AutocompleteInteraction
 } from 'discord.js'
-import prisma from '../../database.js'
+import { prisma } from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -51,7 +51,7 @@ export default {
 
             // On renvoie la liste au format Discord { name, value }
             await interaction.respond(
-                warns.map((w) => ({
+                warns.map((w: any) => ({
                     name: `#${w.id} - ${w.reason.slice(0, 50)} (${new Date(w.createdAt).toLocaleDateString()})`,
                     value: w.id
                 }))
@@ -99,12 +99,14 @@ export default {
             // 3. Envoi du log si configuré (Point 2)
             const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
-            });
+            })
 
             if (config?.logChannelId) {
-                const logChannel = interaction.guild?.channels.cache.get(config.logChannelId);
+                const logChannel = interaction.guild?.channels.cache.get(
+                    config.logChannelId
+                )
                 if (logChannel?.isTextBased()) {
-                    await logChannel.send({ embeds: [embed] });
+                    await logChannel.send({ embeds: [embed] })
                 }
             }
 

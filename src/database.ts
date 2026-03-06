@@ -4,13 +4,18 @@ import { PrismaLibSQL } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client'
 import path from 'path'
 
-// On force le chemin vers le dossier prisma, peu importe le .env
-// Cela garantit que le bot et Prisma CLI utilisent le MÊME fichier.
+// 1. Définition du chemin
 const dbPath = path.resolve(process.cwd(), 'prisma', 'dev.db')
 
-const libsql = createClient({ url: `file:${dbPath}` })
+// 2. Création du client LibSQL
+const libsql = createClient({
+    url: `file:${dbPath}`
+})
+
+// 3. Création de l'adaptateur
 const adapter = new PrismaLibSQL(libsql as any)
 
-const prisma = new PrismaClient({ adapter } as any)
-
-export default prisma
+// 4. Création du PrismaClient
+export const prisma = new PrismaClient({
+    adapter: adapter as any
+})
