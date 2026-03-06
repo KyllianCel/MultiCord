@@ -4,18 +4,22 @@ import { PrismaLibSQL } from '@prisma/adapter-libsql'
 import { createClient } from '@libsql/client'
 import path from 'path'
 
-// 1. Définition du chemin
-const dbPath = path.resolve(process.cwd(), 'prisma', 'dev.db')
+// 1. On construit le chemin absolu de manière robuste
+const dbPath = path.join(process.cwd(), 'prisma', 'dev.db')
+const connectionUrl = `file:${dbPath}`
 
-// 2. Création du client LibSQL
+// 2. Log de contrôle
+console.log(`[Database] Tentative de connexion sur : ${connectionUrl}`)
+
+// 3. Création du client LibSQL
 const libsql = createClient({
-    url: `file:${dbPath}`
+    url: connectionUrl
 })
 
-// 3. Création de l'adaptateur
+// 4. Création de l'adaptateur
 const adapter = new PrismaLibSQL(libsql as any)
 
-// 4. Création du PrismaClient
+// 5. Exportation du client Prisma
 export const prisma = new PrismaClient({
     adapter: adapter as any
 })
