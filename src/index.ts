@@ -13,7 +13,6 @@ const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
 // --- 1. Client ---
-// On exporte aussi le client pour faciliter les imports dans les commandes
 export const client = Object.assign(
     new Client({
         intents: [
