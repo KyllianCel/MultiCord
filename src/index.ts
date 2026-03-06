@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
-import { Shoukaku, Connectors } from 'shoukaku'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -8,7 +7,7 @@ import type ApplicationCommand from './templates/ApplicationCommand.js'
 import type Event from './templates/Event.js'
 import type MessageCommand from './templates/MessageCommand.js'
 
-const { TOKEN, LAVALINK_PASSWORD, LAVALINK_HOST, LAVALINK_PORT } = process.env
+const { TOKEN } = process.env
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
@@ -30,31 +29,7 @@ export const client = Object.assign(
 )
 
 // --- 2. Lavalink ---
-const Nodes = [
-    {
-        name: 'LocalNode',
-        url: `${LAVALINK_HOST || '127.0.0.1'}:${LAVALINK_PORT || '2333'}`,
-        auth: (LAVALINK_PASSWORD || 'youshallnotpass').trim(),
-        secure: false
-    }
-]
-
-console.log(`[Lavalink] Tentative de connexion sur ${Nodes[0].url}`)
-
-// On attache directement au client pour éviter une variable locale "shoukaku" inutilisée
-;(client as any).shoukaku = new Shoukaku(
-    new Connectors.DiscordJS(client as any),
-    Nodes
-)
-;(client as any).queues = new Map()
-
-// On définit les écouteurs sur la propriété du client
-;(client as any).shoukaku.on('ready', (name: string) =>
-    console.log(`✅ Lavalink Node "${name}" prêt !`)
-)
-;(client as any).shoukaku.on('error', (name: string, error: Error) =>
-    console.error(`❌ Erreur Lavalink sur ${name}:`, error)
-)
+//changé dans ready
 
 // --- 3. Loader (Commands & Events) ---
 const commandsPath = path.join(__dirname, 'commands')
