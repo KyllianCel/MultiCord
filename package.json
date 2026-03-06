@@ -16,7 +16,7 @@
         "compile": "tsc && npm run copy",
         "clean": "rimraf dist/",
         "copy": "npx copyfiles -u 1 src/.env src/**/*.json dist/",
-        "build": "npm run lint && npm run prettier && npm run clean && npm run compile",
+        "build": "npx prisma generate && npm run clean && npm run compile",
         "start": "npx copyfiles -u 1 \"src/**/*.json\" dist/ && npx copyfiles -f config.json dist/ && node dist/src/index.js",
         "dev": "node --env-file=.env --import tsx --watch src/index.ts",
         "prod": "npm run build && npm run start",

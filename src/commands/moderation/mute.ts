@@ -6,6 +6,8 @@ import {
     GuildMember
 } from 'discord.js'
 
+import { prisma } from '../../index.js'
+
 export default {
     data: new SlashCommandBuilder()
         .setName('mute')
@@ -75,15 +77,17 @@ export default {
 
         // ENVOI DES LOGS
         const config = await prisma.guildConfig.findUnique({
-                where: { guildId: interaction.guildId! }
-            });
+            where: { guildId: interaction.guildId! }
+        })
 
-            if (config?.logChannelId) {
-                const logChannel = interaction.guild?.channels.cache.get(config.logChannelId);
-                if (logChannel?.isTextBased()) {
-                    await logChannel.send({ embeds: [embed] });
-                }
+        if (config?.logChannelId) {
+            const logChannel = interaction.guild?.channels.cache.get(
+                config.logChannelId
+            )
+            if (logChannel?.isTextBased()) {
+                await logChannel.send({ embeds: [embed] })
             }
+        }
 
         return interaction.reply({ embeds: [embed] })
     }
