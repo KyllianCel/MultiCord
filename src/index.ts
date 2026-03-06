@@ -39,12 +39,12 @@ export const client = Object.assign(
 const Nodes = [
     {
         name: 'MainNode',
-        url: `${LAVALINK_HOST ?? '127.0.0.1'}:${LAVALINK_PORT ?? '2333'}`,
+        url: `${LAVALINK_HOST || '127.0.0.1'}:${LAVALINK_PORT || '2333'}`,
         auth: LAVALINK_PASSWORD
     }
 ]
 
-const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), Nodes)
+const shoukaku = new Shoukaku(new Connectors.DiscordJS(client as any), Nodes)
 ;(client as any).shoukaku = shoukaku
 ;(client as any).queues = new Map()
 
