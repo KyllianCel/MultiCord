@@ -34,7 +34,7 @@ const Nodes = [
     {
         name: 'LocalNode',
         url: `${LAVALINK_HOST || '127.0.0.1'}:${LAVALINK_PORT || '2333'}`,
-        auth: LAVALINK_PASSWORD
+        auth: LAVALINK_PASSWORD || 'youshallnotpass'
     }
 ]
 
