@@ -34,16 +34,24 @@ const Nodes = [
     {
         name: 'LocalNode',
         url: `${LAVALINK_HOST || '127.0.0.1'}:${LAVALINK_PORT || '2333'}`,
-        auth: LAVALINK_PASSWORD || 'youshallnotpass'
+        auth: LAVALINK_PASSWORD
     }
 ]
 
-const shoukaku = new Shoukaku(new Connectors.DiscordJS(client as any), Nodes)
-;(client as any).shoukaku = shoukaku
+console.log(`[Lavalink] Tentative de connexion sur ${Nodes[0].url}`)
+
+// On attache directement au client pour éviter une variable locale "shoukaku" inutilisée
+;(client as any).shoukaku = new Shoukaku(
+    new Connectors.DiscordJS(client as any),
+    Nodes
+)
 ;(client as any).queues = new Map()
 
-shoukaku.on('ready', (name) => console.log(`✅ Lavalink Node "${name}" prêt !`))
-shoukaku.on('error', (name, error) =>
+// On définit les écouteurs sur la propriété du client
+;(client as any).shoukaku.on('ready', (name: string) =>
+    console.log(`✅ Lavalink Node "${name}" prêt !`)
+)
+;(client as any).shoukaku.on('error', (name: string, error: Error) =>
     console.error(`❌ Erreur Lavalink sur ${name}:`, error)
 )
 
