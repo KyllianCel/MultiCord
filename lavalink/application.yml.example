@@ -1,0 +1,25 @@
+server:
+  port: 2333
+  address: 0.0.0.0
+lavalink:
+  server:
+    ratelimit:
+        ipBlocks: ["VOTRE_PREFIXE_IPV6"] # Remplacez par VOTRE supprimer le bloc ratelimit si non utilisé 
+        strategy: "LoadBalancer" # Répartit les requêtes sur tout le bloc
+        searchTriggers: ["429"] # Change d'IP dès qu'un "Too Many Requests" survient
+        retryLimit: -1 # Tente indéfiniment avec une nouvelle IP
+    password: "VOTRE_MOT_DE_PASSE_SECRET"
+    sources:
+      youtube: true
+      soundcloud: true
+      spotify: true
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+    opusEncodingQuality: 10
+metrics:
+  prometheus:
+    enabled: false
+logging:
+  level:
+    root: INFO
+    lavalink: INFO

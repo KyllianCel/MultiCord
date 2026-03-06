@@ -106,4 +106,7 @@ dist
 # TernJS port file
 .tern-port
 
+# Lavalink
+lavalink/application.yml 
+
 /src/generated/prisma
