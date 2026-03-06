@@ -5,6 +5,7 @@ import {
     EmbedBuilder,
     TextChannel
 } from 'discord.js'
+import prisma from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -74,10 +75,13 @@ export default {
             await interaction.reply({ embeds: [embed] })
 
             // --- AJOUT LOGS MODÉRATION ---
-            const logChannelId = process.env.LOG_CHANNEL_ID
-            if (logChannelId) {
-                const logChannel =
-                    interaction.guild?.channels.cache.get(logChannelId)
+            const config = await prisma.guildConfig.findUnique({
+                where: { guildId: interaction.guildId! }
+            });
+
+            if (config?.logChannelId) {
+                const logChannel = interaction.guild?.channels.cache.get(config.logChannelId);
+
                 if (logChannel?.isTextBased()) {
                     const logEmbed = new EmbedBuilder()
                         .setColor(0x3498db)

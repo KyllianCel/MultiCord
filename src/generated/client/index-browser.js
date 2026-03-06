@@ -123,14 +123,25 @@ exports.Prisma.WarnScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GuildConfigScalarFieldEnum = {
+  guildId: 'guildId',
+  logChannelId: 'logChannelId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
-  Warn: 'Warn'
+  Warn: 'Warn',
+  GuildConfig: 'GuildConfig'
 };
 
 /**

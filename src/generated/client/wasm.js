@@ -95,14 +95,25 @@ exports.Prisma.WarnScalarFieldEnum = {
   createdAt: 'createdAt'
 };
 
+exports.Prisma.GuildConfigScalarFieldEnum = {
+  guildId: 'guildId',
+  logChannelId: 'logChannelId'
+};
+
 exports.Prisma.SortOrder = {
   asc: 'asc',
   desc: 'desc'
 };
 
+exports.Prisma.NullsOrder = {
+  first: 'first',
+  last: 'last'
+};
+
 
 exports.Prisma.ModelName = {
-  Warn: 'Warn'
+  Warn: 'Warn',
+  GuildConfig: 'GuildConfig'
 };
 /**
  * Create the Client
@@ -115,7 +126,7 @@ const config = {
       "value": "prisma-client-js"
     },
     "output": {
-      "value": "C:\\Users\\Kyllian\\Desktop\\Licence_3\\Dossier_projet\\MultiCord\\src\\generated\\client",
+      "value": "C:\\Users\\Dell\\Documents\\Licence3\\MultiCord\\src\\generated\\client",
       "fromEnvVar": null
     },
     "config": {
@@ -131,7 +142,7 @@ const config = {
     "previewFeatures": [
       "driverAdapters"
     ],
-    "sourceFilePath": "C:\\Users\\Kyllian\\Desktop\\Licence_3\\Dossier_projet\\MultiCord\\prisma\\schema.prisma",
+    "sourceFilePath": "C:\\Users\\Dell\\Documents\\Licence3\\MultiCord\\prisma\\schema.prisma",
     "isCustomOutput": true
   },
   "relativeEnvPaths": {
@@ -153,13 +164,13 @@ const config = {
       }
     }
   },
-  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Warn {\n  id          Int      @id @default(autoincrement())\n  guildId     String // ID du serveur\n  userId      String // ID de l'utilisateur puni\n  moderatorId String // ID du modérateur\n  reason      String // Raison du warn\n  createdAt   DateTime @default(now())\n}\n",
-  "inlineSchemaHash": "ecc1355ff19d8d010df48bc62f063595b9d052869ae6aeec53153658e3790b04",
+  "inlineSchema": "// This is your Prisma schema file,\n// learn more about it in the docs: https://pris.ly/d/prisma-schema\n\ngenerator client {\n  provider        = \"prisma-client-js\"\n  previewFeatures = [\"driverAdapters\"]\n  output          = \"../src/generated/client\"\n}\n\ndatasource db {\n  provider = \"sqlite\"\n  url      = env(\"DATABASE_URL\")\n}\n\nmodel Warn {\n  id          Int      @id @default(autoincrement())\n  guildId     String // ID du serveur\n  userId      String // ID de l'utilisateur puni\n  moderatorId String // ID du modérateur\n  reason      String // Raison du warn\n  createdAt   DateTime @default(now())\n}\n\nmodel GuildConfig {\n  guildId      String  @id\n  logChannelId String?\n}\n",
+  "inlineSchemaHash": "ced6cc5423a2d13efc6096063f5aa041bd0f1cb7295613fd46ab14f1fa8bf7a8",
   "copyEngine": true
 }
 config.dirname = '/'
 
-config.runtimeDataModel = JSON.parse("{\"models\":{\"Warn\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"moderatorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
+config.runtimeDataModel = JSON.parse("{\"models\":{\"Warn\":{\"fields\":[{\"name\":\"id\",\"kind\":\"scalar\",\"type\":\"Int\"},{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"userId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"moderatorId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"reason\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"createdAt\",\"kind\":\"scalar\",\"type\":\"DateTime\"}],\"dbName\":null},\"GuildConfig\":{\"fields\":[{\"name\":\"guildId\",\"kind\":\"scalar\",\"type\":\"String\"},{\"name\":\"logChannelId\",\"kind\":\"scalar\",\"type\":\"String\"}],\"dbName\":null}},\"enums\":{},\"types\":{}}")
 defineDmmfProperty(exports.Prisma, config.runtimeDataModel)
 config.engineWasm = {
   getRuntime: () => require('./query_engine_bg.js'),

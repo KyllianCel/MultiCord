@@ -20,3 +20,8 @@ model Warn {
   reason      String   // Raison du warn
   createdAt   DateTime @default(now())
 }
+
+model GuildConfig {
+  guildId      String  @id
+  logChannelId String?
+}

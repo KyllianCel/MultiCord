@@ -1,7 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unsafe-member-access */
 /* eslint-disable @typescript-eslint/no-explicit-any */
 import 'dotenv/config'
-import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
+import { Client, GatewayIntentBits, Collection, Partials} from 'discord.js'
 import { Shoukaku, Connectors } from 'shoukaku'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
@@ -55,11 +55,27 @@ for (const item of commandItems) {
     const itemPath = path.join(commandsPath, item)
     if (lstatSync(itemPath).isDirectory()) {
         const folderFiles = readdirSync(itemPath).filter(file => file.endsWith('.js') || file.endsWith('.ts'))
+        
         for (const file of folderFiles) {
             const filePath = path.join(itemPath, file)
-            const command: any = (await import(`file://${filePath}`)).default
-            command.category = item 
-            client.commands.set(command.data.name, command)
+            
+            try {
+                const imported = await import(`file://${filePath}`)
+                const command = imported.default
+
+                // Vérification de sécurité
+                if (!command || !command.data || !command.data.name) {
+                    console.warn(`⚠️ Le fichier "${file}" dans "${item}" n'est pas une commande valide (export default ou data.name manquant).`)
+                    continue
+                }
+
+                command.category = item 
+                client.commands.set(command.data.name, command)
+                console.log(`✅ Commande chargée : ${command.data.name}`) 
+                
+            } catch (error) {
+                console.error(`❌ Erreur lors du chargement de ${file} :`, error)
+            }
         }
     }
 }

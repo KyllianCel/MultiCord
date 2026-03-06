@@ -18,6 +18,11 @@ export type PrismaPromise<T> = $Public.PrismaPromise<T>
  * 
  */
 export type Warn = $Result.DefaultSelection<Prisma.$WarnPayload>
+/**
+ * Model GuildConfig
+ * 
+ */
+export type GuildConfig = $Result.DefaultSelection<Prisma.$GuildConfigPayload>
 
 /**
  * ##  Prisma Client ʲˢ
@@ -153,6 +158,16 @@ export class PrismaClient<
     * ```
     */
   get warn(): Prisma.WarnDelegate<ExtArgs, ClientOptions>;
+
+  /**
+   * `prisma.guildConfig`: Exposes CRUD operations for the **GuildConfig** model.
+    * Example usage:
+    * ```ts
+    * // Fetch zero or more GuildConfigs
+    * const guildConfigs = await prisma.guildConfig.findMany()
+    * ```
+    */
+  get guildConfig(): Prisma.GuildConfigDelegate<ExtArgs, ClientOptions>;
 }
 
 export namespace Prisma {
@@ -593,7 +608,8 @@ export namespace Prisma {
 
 
   export const ModelName: {
-    Warn: 'Warn'
+    Warn: 'Warn',
+    GuildConfig: 'GuildConfig'
   };
 
   export type ModelName = (typeof ModelName)[keyof typeof ModelName]
@@ -609,7 +625,7 @@ export namespace Prisma {
 
   export type TypeMap<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> = {
     meta: {
-      modelProps: "warn"
+      modelProps: "warn" | "guildConfig"
       txIsolationLevel: Prisma.TransactionIsolationLevel
     }
     model: {
@@ -684,6 +700,80 @@ export namespace Prisma {
           count: {
             args: Prisma.WarnCountArgs<ExtArgs>
             result: $Utils.Optional<WarnCountAggregateOutputType> | number
+          }
+        }
+      }
+      GuildConfig: {
+        payload: Prisma.$GuildConfigPayload<ExtArgs>
+        fields: Prisma.GuildConfigFieldRefs
+        operations: {
+          findUnique: {
+            args: Prisma.GuildConfigFindUniqueArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload> | null
+          }
+          findUniqueOrThrow: {
+            args: Prisma.GuildConfigFindUniqueOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          findFirst: {
+            args: Prisma.GuildConfigFindFirstArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload> | null
+          }
+          findFirstOrThrow: {
+            args: Prisma.GuildConfigFindFirstOrThrowArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          findMany: {
+            args: Prisma.GuildConfigFindManyArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>[]
+          }
+          create: {
+            args: Prisma.GuildConfigCreateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          createMany: {
+            args: Prisma.GuildConfigCreateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          createManyAndReturn: {
+            args: Prisma.GuildConfigCreateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>[]
+          }
+          delete: {
+            args: Prisma.GuildConfigDeleteArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          update: {
+            args: Prisma.GuildConfigUpdateArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          deleteMany: {
+            args: Prisma.GuildConfigDeleteManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateMany: {
+            args: Prisma.GuildConfigUpdateManyArgs<ExtArgs>
+            result: BatchPayload
+          }
+          updateManyAndReturn: {
+            args: Prisma.GuildConfigUpdateManyAndReturnArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>[]
+          }
+          upsert: {
+            args: Prisma.GuildConfigUpsertArgs<ExtArgs>
+            result: $Utils.PayloadToResult<Prisma.$GuildConfigPayload>
+          }
+          aggregate: {
+            args: Prisma.GuildConfigAggregateArgs<ExtArgs>
+            result: $Utils.Optional<AggregateGuildConfig>
+          }
+          groupBy: {
+            args: Prisma.GuildConfigGroupByArgs<ExtArgs>
+            result: $Utils.Optional<GuildConfigGroupByOutputType>[]
+          }
+          count: {
+            args: Prisma.GuildConfigCountArgs<ExtArgs>
+            result: $Utils.Optional<GuildConfigCountAggregateOutputType> | number
           }
         }
       }
@@ -776,6 +866,7 @@ export namespace Prisma {
   }
   export type GlobalOmitConfig = {
     warn?: WarnOmit
+    guildConfig?: GuildConfigOmit
   }
 
   /* Types for Logging */
@@ -1911,6 +2002,960 @@ export namespace Prisma {
 
 
   /**
+   * Model GuildConfig
+   */
+
+  export type AggregateGuildConfig = {
+    _count: GuildConfigCountAggregateOutputType | null
+    _min: GuildConfigMinAggregateOutputType | null
+    _max: GuildConfigMaxAggregateOutputType | null
+  }
+
+  export type GuildConfigMinAggregateOutputType = {
+    guildId: string | null
+    logChannelId: string | null
+  }
+
+  export type GuildConfigMaxAggregateOutputType = {
+    guildId: string | null
+    logChannelId: string | null
+  }
+
+  export type GuildConfigCountAggregateOutputType = {
+    guildId: number
+    logChannelId: number
+    _all: number
+  }
+
+
+  export type GuildConfigMinAggregateInputType = {
+    guildId?: true
+    logChannelId?: true
+  }
+
+  export type GuildConfigMaxAggregateInputType = {
+    guildId?: true
+    logChannelId?: true
+  }
+
+  export type GuildConfigCountAggregateInputType = {
+    guildId?: true
+    logChannelId?: true
+    _all?: true
+  }
+
+  export type GuildConfigAggregateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildConfig to aggregate.
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildConfigs to fetch.
+     */
+    orderBy?: GuildConfigOrderByWithRelationInput | GuildConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the start position
+     */
+    cursor?: GuildConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Count returned GuildConfigs
+    **/
+    _count?: true | GuildConfigCountAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the minimum value
+    **/
+    _min?: GuildConfigMinAggregateInputType
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/aggregations Aggregation Docs}
+     * 
+     * Select which fields to find the maximum value
+    **/
+    _max?: GuildConfigMaxAggregateInputType
+  }
+
+  export type GetGuildConfigAggregateType<T extends GuildConfigAggregateArgs> = {
+        [P in keyof T & keyof AggregateGuildConfig]: P extends '_count' | 'count'
+      ? T[P] extends true
+        ? number
+        : GetScalarType<T[P], AggregateGuildConfig[P]>
+      : GetScalarType<T[P], AggregateGuildConfig[P]>
+  }
+
+
+
+
+  export type GuildConfigGroupByArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    where?: GuildConfigWhereInput
+    orderBy?: GuildConfigOrderByWithAggregationInput | GuildConfigOrderByWithAggregationInput[]
+    by: GuildConfigScalarFieldEnum[] | GuildConfigScalarFieldEnum
+    having?: GuildConfigScalarWhereWithAggregatesInput
+    take?: number
+    skip?: number
+    _count?: GuildConfigCountAggregateInputType | true
+    _min?: GuildConfigMinAggregateInputType
+    _max?: GuildConfigMaxAggregateInputType
+  }
+
+  export type GuildConfigGroupByOutputType = {
+    guildId: string
+    logChannelId: string | null
+    _count: GuildConfigCountAggregateOutputType | null
+    _min: GuildConfigMinAggregateOutputType | null
+    _max: GuildConfigMaxAggregateOutputType | null
+  }
+
+  type GetGuildConfigGroupByPayload<T extends GuildConfigGroupByArgs> = Prisma.PrismaPromise<
+    Array<
+      PickEnumerable<GuildConfigGroupByOutputType, T['by']> &
+        {
+          [P in ((keyof T) & (keyof GuildConfigGroupByOutputType))]: P extends '_count'
+            ? T[P] extends boolean
+              ? number
+              : GetScalarType<T[P], GuildConfigGroupByOutputType[P]>
+            : GetScalarType<T[P], GuildConfigGroupByOutputType[P]>
+        }
+      >
+    >
+
+
+  export type GuildConfigSelect<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guildId?: boolean
+    logChannelId?: boolean
+  }, ExtArgs["result"]["guildConfig"]>
+
+  export type GuildConfigSelectCreateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guildId?: boolean
+    logChannelId?: boolean
+  }, ExtArgs["result"]["guildConfig"]>
+
+  export type GuildConfigSelectUpdateManyAndReturn<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetSelect<{
+    guildId?: boolean
+    logChannelId?: boolean
+  }, ExtArgs["result"]["guildConfig"]>
+
+  export type GuildConfigSelectScalar = {
+    guildId?: boolean
+    logChannelId?: boolean
+  }
+
+  export type GuildConfigOmit<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = $Extensions.GetOmit<"guildId" | "logChannelId", ExtArgs["result"]["guildConfig"]>
+
+  export type $GuildConfigPayload<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    name: "GuildConfig"
+    objects: {}
+    scalars: $Extensions.GetPayloadResult<{
+      guildId: string
+      logChannelId: string | null
+    }, ExtArgs["result"]["guildConfig"]>
+    composites: {}
+  }
+
+  type GuildConfigGetPayload<S extends boolean | null | undefined | GuildConfigDefaultArgs> = $Result.GetResult<Prisma.$GuildConfigPayload, S>
+
+  type GuildConfigCountArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> =
+    Omit<GuildConfigFindManyArgs, 'select' | 'include' | 'distinct' | 'omit'> & {
+      select?: GuildConfigCountAggregateInputType | true
+    }
+
+  export interface GuildConfigDelegate<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> {
+    [K: symbol]: { types: Prisma.TypeMap<ExtArgs>['model']['GuildConfig'], meta: { name: 'GuildConfig' } }
+    /**
+     * Find zero or one GuildConfig that matches the filter.
+     * @param {GuildConfigFindUniqueArgs} args - Arguments to find a GuildConfig
+     * @example
+     * // Get one GuildConfig
+     * const guildConfig = await prisma.guildConfig.findUnique({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUnique<T extends GuildConfigFindUniqueArgs>(args: SelectSubset<T, GuildConfigFindUniqueArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "findUnique", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find one GuildConfig that matches the filter or throw an error with `error.code='P2025'`
+     * if no matches were found.
+     * @param {GuildConfigFindUniqueOrThrowArgs} args - Arguments to find a GuildConfig
+     * @example
+     * // Get one GuildConfig
+     * const guildConfig = await prisma.guildConfig.findUniqueOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findUniqueOrThrow<T extends GuildConfigFindUniqueOrThrowArgs>(args: SelectSubset<T, GuildConfigFindUniqueOrThrowArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "findUniqueOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first GuildConfig that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigFindFirstArgs} args - Arguments to find a GuildConfig
+     * @example
+     * // Get one GuildConfig
+     * const guildConfig = await prisma.guildConfig.findFirst({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirst<T extends GuildConfigFindFirstArgs>(args?: SelectSubset<T, GuildConfigFindFirstArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "findFirst", ClientOptions> | null, null, ExtArgs, ClientOptions>
+
+    /**
+     * Find the first GuildConfig that matches the filter or
+     * throw `PrismaKnownClientError` with `P2025` code if no matches were found.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigFindFirstOrThrowArgs} args - Arguments to find a GuildConfig
+     * @example
+     * // Get one GuildConfig
+     * const guildConfig = await prisma.guildConfig.findFirstOrThrow({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     */
+    findFirstOrThrow<T extends GuildConfigFindFirstOrThrowArgs>(args?: SelectSubset<T, GuildConfigFindFirstOrThrowArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "findFirstOrThrow", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Find zero or more GuildConfigs that matches the filter.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigFindManyArgs} args - Arguments to filter and select certain fields only.
+     * @example
+     * // Get all GuildConfigs
+     * const guildConfigs = await prisma.guildConfig.findMany()
+     * 
+     * // Get first 10 GuildConfigs
+     * const guildConfigs = await prisma.guildConfig.findMany({ take: 10 })
+     * 
+     * // Only select the `guildId`
+     * const guildConfigWithGuildIdOnly = await prisma.guildConfig.findMany({ select: { guildId: true } })
+     * 
+     */
+    findMany<T extends GuildConfigFindManyArgs>(args?: SelectSubset<T, GuildConfigFindManyArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "findMany", ClientOptions>>
+
+    /**
+     * Create a GuildConfig.
+     * @param {GuildConfigCreateArgs} args - Arguments to create a GuildConfig.
+     * @example
+     * // Create one GuildConfig
+     * const GuildConfig = await prisma.guildConfig.create({
+     *   data: {
+     *     // ... data to create a GuildConfig
+     *   }
+     * })
+     * 
+     */
+    create<T extends GuildConfigCreateArgs>(args: SelectSubset<T, GuildConfigCreateArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "create", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Create many GuildConfigs.
+     * @param {GuildConfigCreateManyArgs} args - Arguments to create many GuildConfigs.
+     * @example
+     * // Create many GuildConfigs
+     * const guildConfig = await prisma.guildConfig.createMany({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     *     
+     */
+    createMany<T extends GuildConfigCreateManyArgs>(args?: SelectSubset<T, GuildConfigCreateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Create many GuildConfigs and returns the data saved in the database.
+     * @param {GuildConfigCreateManyAndReturnArgs} args - Arguments to create many GuildConfigs.
+     * @example
+     * // Create many GuildConfigs
+     * const guildConfig = await prisma.guildConfig.createManyAndReturn({
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Create many GuildConfigs and only return the `guildId`
+     * const guildConfigWithGuildIdOnly = await prisma.guildConfig.createManyAndReturn({
+     *   select: { guildId: true },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    createManyAndReturn<T extends GuildConfigCreateManyAndReturnArgs>(args?: SelectSubset<T, GuildConfigCreateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "createManyAndReturn", ClientOptions>>
+
+    /**
+     * Delete a GuildConfig.
+     * @param {GuildConfigDeleteArgs} args - Arguments to delete one GuildConfig.
+     * @example
+     * // Delete one GuildConfig
+     * const GuildConfig = await prisma.guildConfig.delete({
+     *   where: {
+     *     // ... filter to delete one GuildConfig
+     *   }
+     * })
+     * 
+     */
+    delete<T extends GuildConfigDeleteArgs>(args: SelectSubset<T, GuildConfigDeleteArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "delete", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Update one GuildConfig.
+     * @param {GuildConfigUpdateArgs} args - Arguments to update one GuildConfig.
+     * @example
+     * // Update one GuildConfig
+     * const guildConfig = await prisma.guildConfig.update({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    update<T extends GuildConfigUpdateArgs>(args: SelectSubset<T, GuildConfigUpdateArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "update", ClientOptions>, never, ExtArgs, ClientOptions>
+
+    /**
+     * Delete zero or more GuildConfigs.
+     * @param {GuildConfigDeleteManyArgs} args - Arguments to filter GuildConfigs to delete.
+     * @example
+     * // Delete a few GuildConfigs
+     * const { count } = await prisma.guildConfig.deleteMany({
+     *   where: {
+     *     // ... provide filter here
+     *   }
+     * })
+     * 
+     */
+    deleteMany<T extends GuildConfigDeleteManyArgs>(args?: SelectSubset<T, GuildConfigDeleteManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildConfigs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigUpdateManyArgs} args - Arguments to update one or more rows.
+     * @example
+     * // Update many GuildConfigs
+     * const guildConfig = await prisma.guildConfig.updateMany({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: {
+     *     // ... provide data here
+     *   }
+     * })
+     * 
+     */
+    updateMany<T extends GuildConfigUpdateManyArgs>(args: SelectSubset<T, GuildConfigUpdateManyArgs<ExtArgs>>): Prisma.PrismaPromise<BatchPayload>
+
+    /**
+     * Update zero or more GuildConfigs and returns the data updated in the database.
+     * @param {GuildConfigUpdateManyAndReturnArgs} args - Arguments to update many GuildConfigs.
+     * @example
+     * // Update many GuildConfigs
+     * const guildConfig = await prisma.guildConfig.updateManyAndReturn({
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * 
+     * // Update zero or more GuildConfigs and only return the `guildId`
+     * const guildConfigWithGuildIdOnly = await prisma.guildConfig.updateManyAndReturn({
+     *   select: { guildId: true },
+     *   where: {
+     *     // ... provide filter here
+     *   },
+     *   data: [
+     *     // ... provide data here
+     *   ]
+     * })
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * 
+     */
+    updateManyAndReturn<T extends GuildConfigUpdateManyAndReturnArgs>(args: SelectSubset<T, GuildConfigUpdateManyAndReturnArgs<ExtArgs>>): Prisma.PrismaPromise<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "updateManyAndReturn", ClientOptions>>
+
+    /**
+     * Create or update one GuildConfig.
+     * @param {GuildConfigUpsertArgs} args - Arguments to update or create a GuildConfig.
+     * @example
+     * // Update or create a GuildConfig
+     * const guildConfig = await prisma.guildConfig.upsert({
+     *   create: {
+     *     // ... data to create a GuildConfig
+     *   },
+     *   update: {
+     *     // ... in case it already exists, update
+     *   },
+     *   where: {
+     *     // ... the filter for the GuildConfig we want to update
+     *   }
+     * })
+     */
+    upsert<T extends GuildConfigUpsertArgs>(args: SelectSubset<T, GuildConfigUpsertArgs<ExtArgs>>): Prisma__GuildConfigClient<$Result.GetResult<Prisma.$GuildConfigPayload<ExtArgs>, T, "upsert", ClientOptions>, never, ExtArgs, ClientOptions>
+
+
+    /**
+     * Count the number of GuildConfigs.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigCountArgs} args - Arguments to filter GuildConfigs to count.
+     * @example
+     * // Count the number of GuildConfigs
+     * const count = await prisma.guildConfig.count({
+     *   where: {
+     *     // ... the filter for the GuildConfigs we want to count
+     *   }
+     * })
+    **/
+    count<T extends GuildConfigCountArgs>(
+      args?: Subset<T, GuildConfigCountArgs>,
+    ): Prisma.PrismaPromise<
+      T extends $Utils.Record<'select', any>
+        ? T['select'] extends true
+          ? number
+          : GetScalarType<T['select'], GuildConfigCountAggregateOutputType>
+        : number
+    >
+
+    /**
+     * Allows you to perform aggregations operations on a GuildConfig.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigAggregateArgs} args - Select which aggregations you would like to apply and on what fields.
+     * @example
+     * // Ordered by age ascending
+     * // Where email contains prisma.io
+     * // Limited to the 10 users
+     * const aggregations = await prisma.user.aggregate({
+     *   _avg: {
+     *     age: true,
+     *   },
+     *   where: {
+     *     email: {
+     *       contains: "prisma.io",
+     *     },
+     *   },
+     *   orderBy: {
+     *     age: "asc",
+     *   },
+     *   take: 10,
+     * })
+    **/
+    aggregate<T extends GuildConfigAggregateArgs>(args: Subset<T, GuildConfigAggregateArgs>): Prisma.PrismaPromise<GetGuildConfigAggregateType<T>>
+
+    /**
+     * Group by GuildConfig.
+     * Note, that providing `undefined` is treated as the value not being there.
+     * Read more here: https://pris.ly/d/null-undefined
+     * @param {GuildConfigGroupByArgs} args - Group by arguments.
+     * @example
+     * // Group by city, order by createdAt, get count
+     * const result = await prisma.user.groupBy({
+     *   by: ['city', 'createdAt'],
+     *   orderBy: {
+     *     createdAt: true
+     *   },
+     *   _count: {
+     *     _all: true
+     *   },
+     * })
+     * 
+    **/
+    groupBy<
+      T extends GuildConfigGroupByArgs,
+      HasSelectOrTake extends Or<
+        Extends<'skip', Keys<T>>,
+        Extends<'take', Keys<T>>
+      >,
+      OrderByArg extends True extends HasSelectOrTake
+        ? { orderBy: GuildConfigGroupByArgs['orderBy'] }
+        : { orderBy?: GuildConfigGroupByArgs['orderBy'] },
+      OrderFields extends ExcludeUnderscoreKeys<Keys<MaybeTupleToUnion<T['orderBy']>>>,
+      ByFields extends MaybeTupleToUnion<T['by']>,
+      ByValid extends Has<ByFields, OrderFields>,
+      HavingFields extends GetHavingFields<T['having']>,
+      HavingValid extends Has<ByFields, HavingFields>,
+      ByEmpty extends T['by'] extends never[] ? True : False,
+      InputErrors extends ByEmpty extends True
+      ? `Error: "by" must not be empty.`
+      : HavingValid extends False
+      ? {
+          [P in HavingFields]: P extends ByFields
+            ? never
+            : P extends string
+            ? `Error: Field "${P}" used in "having" needs to be provided in "by".`
+            : [
+                Error,
+                'Field ',
+                P,
+                ` in "having" needs to be provided in "by"`,
+              ]
+        }[HavingFields]
+      : 'take' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "take", you also need to provide "orderBy"'
+      : 'skip' extends Keys<T>
+      ? 'orderBy' extends Keys<T>
+        ? ByValid extends True
+          ? {}
+          : {
+              [P in OrderFields]: P extends ByFields
+                ? never
+                : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+            }[OrderFields]
+        : 'Error: If you provide "skip", you also need to provide "orderBy"'
+      : ByValid extends True
+      ? {}
+      : {
+          [P in OrderFields]: P extends ByFields
+            ? never
+            : `Error: Field "${P}" in "orderBy" needs to be provided in "by"`
+        }[OrderFields]
+    >(args: SubsetIntersection<T, GuildConfigGroupByArgs, OrderByArg> & InputErrors): {} extends InputErrors ? GetGuildConfigGroupByPayload<T> : Prisma.PrismaPromise<InputErrors>
+  /**
+   * Fields of the GuildConfig model
+   */
+  readonly fields: GuildConfigFieldRefs;
+  }
+
+  /**
+   * The delegate class that acts as a "Promise-like" for GuildConfig.
+   * Why is this prefixed with `Prisma__`?
+   * Because we want to prevent naming conflicts as mentioned in
+   * https://github.com/prisma/prisma-client-js/issues/707
+   */
+  export interface Prisma__GuildConfigClient<T, Null = never, ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs, ClientOptions = {}> extends Prisma.PrismaPromise<T> {
+    readonly [Symbol.toStringTag]: "PrismaPromise"
+    /**
+     * Attaches callbacks for the resolution and/or rejection of the Promise.
+     * @param onfulfilled The callback to execute when the Promise is resolved.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of which ever callback is executed.
+     */
+    then<TResult1 = T, TResult2 = never>(onfulfilled?: ((value: T) => TResult1 | PromiseLike<TResult1>) | undefined | null, onrejected?: ((reason: any) => TResult2 | PromiseLike<TResult2>) | undefined | null): $Utils.JsPromise<TResult1 | TResult2>
+    /**
+     * Attaches a callback for only the rejection of the Promise.
+     * @param onrejected The callback to execute when the Promise is rejected.
+     * @returns A Promise for the completion of the callback.
+     */
+    catch<TResult = never>(onrejected?: ((reason: any) => TResult | PromiseLike<TResult>) | undefined | null): $Utils.JsPromise<T | TResult>
+    /**
+     * Attaches a callback that is invoked when the Promise is settled (fulfilled or rejected). The
+     * resolved value cannot be modified from the callback.
+     * @param onfinally The callback to execute when the Promise is settled (fulfilled or rejected).
+     * @returns A Promise for the completion of the callback.
+     */
+    finally(onfinally?: (() => void) | undefined | null): $Utils.JsPromise<T>
+  }
+
+
+
+
+  /**
+   * Fields of the GuildConfig model
+   */ 
+  interface GuildConfigFieldRefs {
+    readonly guildId: FieldRef<"GuildConfig", 'String'>
+    readonly logChannelId: FieldRef<"GuildConfig", 'String'>
+  }
+    
+
+  // Custom InputTypes
+  /**
+   * GuildConfig findUnique
+   */
+  export type GuildConfigFindUniqueArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which GuildConfig to fetch.
+     */
+    where: GuildConfigWhereUniqueInput
+  }
+
+  /**
+   * GuildConfig findUniqueOrThrow
+   */
+  export type GuildConfigFindUniqueOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which GuildConfig to fetch.
+     */
+    where: GuildConfigWhereUniqueInput
+  }
+
+  /**
+   * GuildConfig findFirst
+   */
+  export type GuildConfigFindFirstArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which GuildConfig to fetch.
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildConfigs to fetch.
+     */
+    orderBy?: GuildConfigOrderByWithRelationInput | GuildConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildConfigs.
+     */
+    cursor?: GuildConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildConfigs.
+     */
+    distinct?: GuildConfigScalarFieldEnum | GuildConfigScalarFieldEnum[]
+  }
+
+  /**
+   * GuildConfig findFirstOrThrow
+   */
+  export type GuildConfigFindFirstOrThrowArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which GuildConfig to fetch.
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildConfigs to fetch.
+     */
+    orderBy?: GuildConfigOrderByWithRelationInput | GuildConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for searching for GuildConfigs.
+     */
+    cursor?: GuildConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildConfigs.
+     */
+    skip?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/distinct Distinct Docs}
+     * 
+     * Filter by unique combinations of GuildConfigs.
+     */
+    distinct?: GuildConfigScalarFieldEnum | GuildConfigScalarFieldEnum[]
+  }
+
+  /**
+   * GuildConfig findMany
+   */
+  export type GuildConfigFindManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter, which GuildConfigs to fetch.
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/sorting Sorting Docs}
+     * 
+     * Determine the order of GuildConfigs to fetch.
+     */
+    orderBy?: GuildConfigOrderByWithRelationInput | GuildConfigOrderByWithRelationInput[]
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination#cursor-based-pagination Cursor Docs}
+     * 
+     * Sets the position for listing GuildConfigs.
+     */
+    cursor?: GuildConfigWhereUniqueInput
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Take `±n` GuildConfigs from the position of the cursor.
+     */
+    take?: number
+    /**
+     * {@link https://www.prisma.io/docs/concepts/components/prisma-client/pagination Pagination Docs}
+     * 
+     * Skip the first `n` GuildConfigs.
+     */
+    skip?: number
+    distinct?: GuildConfigScalarFieldEnum | GuildConfigScalarFieldEnum[]
+  }
+
+  /**
+   * GuildConfig create
+   */
+  export type GuildConfigCreateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * The data needed to create a GuildConfig.
+     */
+    data: XOR<GuildConfigCreateInput, GuildConfigUncheckedCreateInput>
+  }
+
+  /**
+   * GuildConfig createMany
+   */
+  export type GuildConfigCreateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to create many GuildConfigs.
+     */
+    data: GuildConfigCreateManyInput | GuildConfigCreateManyInput[]
+  }
+
+  /**
+   * GuildConfig createManyAndReturn
+   */
+  export type GuildConfigCreateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelectCreateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * The data used to create many GuildConfigs.
+     */
+    data: GuildConfigCreateManyInput | GuildConfigCreateManyInput[]
+  }
+
+  /**
+   * GuildConfig update
+   */
+  export type GuildConfigUpdateArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * The data needed to update a GuildConfig.
+     */
+    data: XOR<GuildConfigUpdateInput, GuildConfigUncheckedUpdateInput>
+    /**
+     * Choose, which GuildConfig to update.
+     */
+    where: GuildConfigWhereUniqueInput
+  }
+
+  /**
+   * GuildConfig updateMany
+   */
+  export type GuildConfigUpdateManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * The data used to update GuildConfigs.
+     */
+    data: XOR<GuildConfigUpdateManyMutationInput, GuildConfigUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildConfigs to update
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * Limit how many GuildConfigs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildConfig updateManyAndReturn
+   */
+  export type GuildConfigUpdateManyAndReturnArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelectUpdateManyAndReturn<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * The data used to update GuildConfigs.
+     */
+    data: XOR<GuildConfigUpdateManyMutationInput, GuildConfigUncheckedUpdateManyInput>
+    /**
+     * Filter which GuildConfigs to update
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * Limit how many GuildConfigs to update.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildConfig upsert
+   */
+  export type GuildConfigUpsertArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * The filter to search for the GuildConfig to update in case it exists.
+     */
+    where: GuildConfigWhereUniqueInput
+    /**
+     * In case the GuildConfig found by the `where` argument doesn't exist, create a new GuildConfig with this data.
+     */
+    create: XOR<GuildConfigCreateInput, GuildConfigUncheckedCreateInput>
+    /**
+     * In case the GuildConfig was found with the provided `where` argument, update it with this data.
+     */
+    update: XOR<GuildConfigUpdateInput, GuildConfigUncheckedUpdateInput>
+  }
+
+  /**
+   * GuildConfig delete
+   */
+  export type GuildConfigDeleteArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+    /**
+     * Filter which GuildConfig to delete.
+     */
+    where: GuildConfigWhereUniqueInput
+  }
+
+  /**
+   * GuildConfig deleteMany
+   */
+  export type GuildConfigDeleteManyArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Filter which GuildConfigs to delete
+     */
+    where?: GuildConfigWhereInput
+    /**
+     * Limit how many GuildConfigs to delete.
+     */
+    limit?: number
+  }
+
+  /**
+   * GuildConfig without action
+   */
+  export type GuildConfigDefaultArgs<ExtArgs extends $Extensions.InternalArgs = $Extensions.DefaultArgs> = {
+    /**
+     * Select specific fields to fetch from the GuildConfig
+     */
+    select?: GuildConfigSelect<ExtArgs> | null
+    /**
+     * Omit specific fields from the GuildConfig
+     */
+    omit?: GuildConfigOmit<ExtArgs> | null
+  }
+
+
+  /**
    * Enums
    */
 
@@ -1933,12 +2978,28 @@ export namespace Prisma {
   export type WarnScalarFieldEnum = (typeof WarnScalarFieldEnum)[keyof typeof WarnScalarFieldEnum]
 
 
+  export const GuildConfigScalarFieldEnum: {
+    guildId: 'guildId',
+    logChannelId: 'logChannelId'
+  };
+
+  export type GuildConfigScalarFieldEnum = (typeof GuildConfigScalarFieldEnum)[keyof typeof GuildConfigScalarFieldEnum]
+
+
   export const SortOrder: {
     asc: 'asc',
     desc: 'desc'
   };
 
   export type SortOrder = (typeof SortOrder)[keyof typeof SortOrder]
+
+
+  export const NullsOrder: {
+    first: 'first',
+    last: 'last'
+  };
+
+  export type NullsOrder = (typeof NullsOrder)[keyof typeof NullsOrder]
 
 
   /**
@@ -2036,6 +3097,43 @@ export namespace Prisma {
     createdAt?: DateTimeWithAggregatesFilter<"Warn"> | Date | string
   }
 
+  export type GuildConfigWhereInput = {
+    AND?: GuildConfigWhereInput | GuildConfigWhereInput[]
+    OR?: GuildConfigWhereInput[]
+    NOT?: GuildConfigWhereInput | GuildConfigWhereInput[]
+    guildId?: StringFilter<"GuildConfig"> | string
+    logChannelId?: StringNullableFilter<"GuildConfig"> | string | null
+  }
+
+  export type GuildConfigOrderByWithRelationInput = {
+    guildId?: SortOrder
+    logChannelId?: SortOrderInput | SortOrder
+  }
+
+  export type GuildConfigWhereUniqueInput = Prisma.AtLeast<{
+    guildId?: string
+    AND?: GuildConfigWhereInput | GuildConfigWhereInput[]
+    OR?: GuildConfigWhereInput[]
+    NOT?: GuildConfigWhereInput | GuildConfigWhereInput[]
+    logChannelId?: StringNullableFilter<"GuildConfig"> | string | null
+  }, "guildId">
+
+  export type GuildConfigOrderByWithAggregationInput = {
+    guildId?: SortOrder
+    logChannelId?: SortOrderInput | SortOrder
+    _count?: GuildConfigCountOrderByAggregateInput
+    _max?: GuildConfigMaxOrderByAggregateInput
+    _min?: GuildConfigMinOrderByAggregateInput
+  }
+
+  export type GuildConfigScalarWhereWithAggregatesInput = {
+    AND?: GuildConfigScalarWhereWithAggregatesInput | GuildConfigScalarWhereWithAggregatesInput[]
+    OR?: GuildConfigScalarWhereWithAggregatesInput[]
+    NOT?: GuildConfigScalarWhereWithAggregatesInput | GuildConfigScalarWhereWithAggregatesInput[]
+    guildId?: StringWithAggregatesFilter<"GuildConfig"> | string
+    logChannelId?: StringNullableWithAggregatesFilter<"GuildConfig"> | string | null
+  }
+
   export type WarnCreateInput = {
     guildId: string
     userId: string
@@ -2094,6 +3192,41 @@ export namespace Prisma {
     moderatorId?: StringFieldUpdateOperationsInput | string
     reason?: StringFieldUpdateOperationsInput | string
     createdAt?: DateTimeFieldUpdateOperationsInput | Date | string
+  }
+
+  export type GuildConfigCreateInput = {
+    guildId: string
+    logChannelId?: string | null
+  }
+
+  export type GuildConfigUncheckedCreateInput = {
+    guildId: string
+    logChannelId?: string | null
+  }
+
+  export type GuildConfigUpdateInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    logChannelId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type GuildConfigUncheckedUpdateInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    logChannelId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type GuildConfigCreateManyInput = {
+    guildId: string
+    logChannelId?: string | null
+  }
+
+  export type GuildConfigUpdateManyMutationInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    logChannelId?: NullableStringFieldUpdateOperationsInput | string | null
+  }
+
+  export type GuildConfigUncheckedUpdateManyInput = {
+    guildId?: StringFieldUpdateOperationsInput | string
+    logChannelId?: NullableStringFieldUpdateOperationsInput | string | null
   }
 
   export type IntFilter<$PrismaModel = never> = {
@@ -2214,6 +3347,57 @@ export namespace Prisma {
     _max?: NestedDateTimeFilter<$PrismaModel>
   }
 
+  export type StringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type SortOrderInput = {
+    sort: SortOrder
+    nulls?: NullsOrder
+  }
+
+  export type GuildConfigCountOrderByAggregateInput = {
+    guildId?: SortOrder
+    logChannelId?: SortOrder
+  }
+
+  export type GuildConfigMaxOrderByAggregateInput = {
+    guildId?: SortOrder
+    logChannelId?: SortOrder
+  }
+
+  export type GuildConfigMinOrderByAggregateInput = {
+    guildId?: SortOrder
+    logChannelId?: SortOrder
+  }
+
+  export type StringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
   export type StringFieldUpdateOperationsInput = {
     set?: string
   }
@@ -2228,6 +3412,10 @@ export namespace Prisma {
     decrement?: number
     multiply?: number
     divide?: number
+  }
+
+  export type NullableStringFieldUpdateOperationsInput = {
+    set?: string | null
   }
 
   export type NestedIntFilter<$PrismaModel = never> = {
@@ -2322,6 +3510,48 @@ export namespace Prisma {
     _count?: NestedIntFilter<$PrismaModel>
     _min?: NestedDateTimeFilter<$PrismaModel>
     _max?: NestedDateTimeFilter<$PrismaModel>
+  }
+
+  export type NestedStringNullableFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableFilter<$PrismaModel> | string | null
+  }
+
+  export type NestedStringNullableWithAggregatesFilter<$PrismaModel = never> = {
+    equals?: string | StringFieldRefInput<$PrismaModel> | null
+    in?: string[] | null
+    notIn?: string[] | null
+    lt?: string | StringFieldRefInput<$PrismaModel>
+    lte?: string | StringFieldRefInput<$PrismaModel>
+    gt?: string | StringFieldRefInput<$PrismaModel>
+    gte?: string | StringFieldRefInput<$PrismaModel>
+    contains?: string | StringFieldRefInput<$PrismaModel>
+    startsWith?: string | StringFieldRefInput<$PrismaModel>
+    endsWith?: string | StringFieldRefInput<$PrismaModel>
+    not?: NestedStringNullableWithAggregatesFilter<$PrismaModel> | string | null
+    _count?: NestedIntNullableFilter<$PrismaModel>
+    _min?: NestedStringNullableFilter<$PrismaModel>
+    _max?: NestedStringNullableFilter<$PrismaModel>
+  }
+
+  export type NestedIntNullableFilter<$PrismaModel = never> = {
+    equals?: number | IntFieldRefInput<$PrismaModel> | null
+    in?: number[] | null
+    notIn?: number[] | null
+    lt?: number | IntFieldRefInput<$PrismaModel>
+    lte?: number | IntFieldRefInput<$PrismaModel>
+    gt?: number | IntFieldRefInput<$PrismaModel>
+    gte?: number | IntFieldRefInput<$PrismaModel>
+    not?: NestedIntNullableFilter<$PrismaModel> | number | null
   }
 
 

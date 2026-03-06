@@ -5,6 +5,7 @@ import {
     ChatInputCommandInteraction,
     GuildMember
 } from 'discord.js'
+import prisma from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -75,14 +76,16 @@ export default {
             .setTimestamp()
 
         // 5. ENVOI DES LOGS (Maintenant l'embed existe !)
-        const logChannelId = process.env.LOG_CHANNEL_ID
-        if (logChannelId) {
-            const logChannel =
-                interaction.guild?.channels.cache.get(logChannelId)
-            if (logChannel?.isTextBased()) {
-                await logChannel.send({ embeds: [embed] })
+        const config = await prisma.guildConfig.findUnique({
+                where: { guildId: interaction.guildId! }
+            });
+
+            if (config?.logChannelId) {
+                const logChannel = interaction.guild?.channels.cache.get(config.logChannelId);
+                if (logChannel?.isTextBased()) {
+                    await logChannel.send({ embeds: [embed] });
+                }
             }
-        }
 
         // 6. Réponse à l'interaction
         return interaction.reply({ embeds: [embed] })

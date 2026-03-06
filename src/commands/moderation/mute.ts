@@ -74,14 +74,16 @@ export default {
             .setTimestamp()
 
         // ENVOI DES LOGS
-        const logChannelId = process.env.LOG_CHANNEL_ID
-        if (logChannelId) {
-            const logChannel =
-                interaction.guild?.channels.cache.get(logChannelId)
-            if (logChannel?.isTextBased()) {
-                await logChannel.send({ embeds: [embed] })
+        const config = await prisma.guildConfig.findUnique({
+                where: { guildId: interaction.guildId! }
+            });
+
+            if (config?.logChannelId) {
+                const logChannel = interaction.guild?.channels.cache.get(config.logChannelId);
+                if (logChannel?.isTextBased()) {
+                    await logChannel.send({ embeds: [embed] });
+                }
             }
-        }
 
         return interaction.reply({ embeds: [embed] })
     }
