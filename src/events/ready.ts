@@ -23,61 +23,52 @@ export default new Event({
             }
         ]
 
-        try {
-            const shoukaku = new Shoukaku(
-                new Connectors.DiscordJS(client as any),
-                Nodes,
-                {
-                    moveOnDisconnect: true,
-                    resume: true,
-                    reconnectTries: 20,
-                    reconnectInterval: 5
-                }
-            )
+        console.log(`⏳ En attente de Lavalink sur ${host}:${port}...`)
 
-            const extendedClient = client as any
-            extendedClient.shoukaku = shoukaku
-            extendedClient.queues = new Map()
-
-            // Événements de base avec types explicites
-            shoukaku.on('ready', (name: string) =>
-                console.log(
-                    `⭐ [SUCCESS] Le nœud Lavalink "${name}" est CONNECTÉ !`
-                )
-            )
-            shoukaku.on('error', (name: string, error: Error) =>
-                console.error(`❌ [ERROR] Lavalink ${name}:`, error.message)
-            )
-            shoukaku.on('debug', (name: string, info: string) => {
-                if (
-                    info.toLowerCase().includes('fail') ||
-                    info.toLowerCase().includes('connect')
-                ) {
-                    console.log(`🔍 [DEBUG] ${name}: ${info}`)
-                }
-            })
-
-            // SCANNER D'ÉTAT (Correction : .reconnects au lieu de .reconnectAttempts)
-            const checkState = setInterval(() => {
-                const node = shoukaku.nodes.get('LocalNode')
-                if (node) {
-                    // node.state : 0 = DISCONNECTED, 1 = CONNECTED, 2 = CONNECTING
-                    console.log(
-                        `[Lavalink Stats] Etat: ${node.state} | Tentatives: ${node.reconnects}`
-                    )
-
-                    if (node.state === 1) {
-                        console.log('🎊 LA CONNEXION EST ENFIN ÉTABLIE !')
-                        clearInterval(checkState)
+        // FONCTION DE CONNEXION FORCÉE
+        const connectLavalink = () => {
+            try {
+                const shoukaku = new Shoukaku(
+                    new Connectors.DiscordJS(client as any),
+                    Nodes,
+                    {
+                        moveOnDisconnect: true,
+                        resume: true,
+                        reconnectTries: 100, // On insiste lourdement
+                        reconnectInterval: 5
                     }
-                }
-            }, 5000)
+                )
 
-            console.log(`🚀 Système initialisé sur ${host}:${port}.`)
-        } catch (err) {
-            console.error('❌ Échec critique de Shoukaku :', err)
+                ;(client as any).shoukaku = shoukaku
+                ;(client as any).queues = new Map()
+
+                shoukaku.on('ready', (name: string) => {
+                    console.log(
+                        `⭐ [LAVALINK] Connexion réussie au nœud : ${name}`
+                    )
+                })
+
+                shoukaku.on('error', (name: string, error: Error) => {
+                    console.error(
+                        `❌ [LAVALINK] Erreur sur ${name}: ${error.message}`
+                    )
+                })
+
+                shoukaku.on('debug', (name: string, info: string) => {
+                    // On log TOUT le debug pour comprendre le blocage
+                    console.log(`🔍 [DEBUG ${name}] ${info}`)
+                })
+            } catch (err) {
+                console.error("❌ Erreur d'initialisation Shoukaku:", err)
+            }
         }
 
-        console.log(`🚀 MultiCord est prêt !`)
+        // On attend 10 secondes après le boot du bot pour être SÛR que Lavalink a fini
+        setTimeout(() => {
+            console.log('🚀 Lancement de la connexion Shoukaku...')
+            connectLavalink()
+        }, 10000)
+
+        console.log(`🚀 MultiCord est prêt ! (Musique dans 10s)`)
     }
 })
