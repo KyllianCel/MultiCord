@@ -8,7 +8,7 @@ export default new Event({
     async execute(client: Client) {
         console.log(`✅ Logged in as ${client.user?.tag}!`)
 
-        // Configuration des Nodes
+        // Configuration sécurisée
         const Nodes = [
             {
                 name: 'LocalNode',
@@ -18,18 +18,19 @@ export default new Event({
             }
         ]
 
-        // Initialisation différée de Shoukaku
+        // Initialisation au bon moment
         const shoukaku = new Shoukaku(
             new Connectors.DiscordJS(client as any),
             Nodes
         )
 
-        // On attache shoukaku au client pour que les commandes y aient accès
+        // On attache shoukaku au client pour que /play puisse le trouver
         ;(client as any).shoukaku = shoukaku
         ;(client as any).queues = new Map()
 
+        // Événements de statut
         shoukaku.on('ready', (name) =>
-            console.log(`✅ Lavalink Node "${name}" prêt !`)
+            console.log(`✅ Lavalink Node "${name}" est PRÊT !`)
         )
         shoukaku.on('error', (name, error) =>
             console.error(`❌ Erreur Lavalink sur ${name}:`, error)
