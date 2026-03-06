@@ -8,7 +8,6 @@ export default new Event({
     async execute(client: Client) {
         console.log(`✅ Logged in as ${client.user?.tag}!`)
 
-        // 1. On prépare les données proprement
         const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
         const port = (process.env.LAVALINK_PORT || '2333').toString().trim()
         const password = (
@@ -27,8 +26,8 @@ export default new Event({
         console.log(`🔍 Tentative de connexion sur ${host}:${port}`)
 
         try {
-            // 2. On crée l'instance Shoukaku
-            const shoukaku = new Shoukaku(
+            // Initialisation de Shoukaku
+            const shoukakuInstance = new Shoukaku(
                 new Connectors.DiscordJS(client as any),
                 Nodes,
                 {
@@ -39,44 +38,29 @@ export default new Event({
                 }
             )
 
-            // 3. ON ATTACHE AU CLIENT SEULEMENT APRÈS LA DÉCLARATION
-            ;(client as any).shoukaku = shoukaku
-            ;(client as any).queues = new Map()
-
-            // 4. Événements avec types explicites pour éviter le "Implicit any"
-            shoukaku.on('ready', (name: string) => {
+            // On attache les événements AVANT d'attacher au client
+            shoukakuInstance.on('ready', (name: string) => {
                 console.log(
                     `⭐ [Lavalink] Le nœud "${name}" est ENFIN CONNECTÉ !`
                 )
             })
 
-            shoukaku.on('error', (name: string, error: Error) => {
+            shoukakuInstance.on('error', (name: string, error: Error) => {
                 console.error(
                     `❌ [Lavalink] Erreur sur ${name}:`,
                     error.message
                 )
             })
 
-            shoukaku.on(
-                'close',
-                (name: string, code: number, reason: string) => {
-                    console.warn(
-                        `⚠️ [Lavalink] Connexion fermée sur ${name}. Code: ${code}, Raison: ${reason || 'Inconnue'}`
-                    )
-                }
-            )
+            // On injecte tout dans le client
+            const extendedClient = client as any
+            extendedClient.shoukaku = shoukakuInstance
+            extendedClient.queues = new Map()
 
-            shoukaku.on('debug', (name: string, info: string) => {
-                if (
-                    info.toLowerCase().includes('fail') ||
-                    info.toLowerCase().includes('connect')
-                ) {
-                    console.log(`🔍 [Shoukaku Debug] ${name}: ${info}`)
-                }
-            })
+            console.log(`🚀 Système de musique initialisé avec succès !`)
         } catch (err) {
             console.error(
-                "❌ Erreur lors de l'initialisation de Shoukaku :",
+                '❌ ERREUR FATALE lors de la création de Shoukaku :',
                 err
             )
         }
