@@ -8,15 +8,12 @@ export default new Event({
     async execute(client: Client) {
         console.log(`✅ Logged in as ${client.user?.tag}!`)
 
-        // 1. Extraction et nettoyage des variables d'environnement
+        // 1. On prépare les données proprement
         const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
         const port = (process.env.LAVALINK_PORT || '2333').toString().trim()
         const password = (
             process.env.LAVALINK_PASSWORD || 'youshallnotpass'
         ).trim()
-
-        // Log de diagnostic pour vérifier l'URL de connexion
-        console.log(`🔍 Tentative de connexion Lavalink sur : ${host}:${port}`)
 
         const Nodes = [
             {
@@ -27,9 +24,10 @@ export default new Event({
             }
         ]
 
-        // 2. On attend 5 secondes avant de lancer Shoukaku
-        // Cela évite que le bot tente de se connecter pendant que Lavalink "chauffe" encore
-        setTimeout(() => {
+        console.log(`🔍 Tentative de connexion sur ${host}:${port}`)
+
+        try {
+            // 2. On crée l'instance Shoukaku
             const shoukaku = new Shoukaku(
                 new Connectors.DiscordJS(client as any),
                 Nodes,
@@ -41,33 +39,48 @@ export default new Event({
                 }
             )
 
+            // 3. ON ATTACHE AU CLIENT SEULEMENT APRÈS LA DÉCLARATION
             ;(client as any).shoukaku = shoukaku
             ;(client as any).queues = new Map()
 
-            // Événements de statut
-            shoukaku.on('ready', (name) => {
-                console.log(`✅ Lavalink Node "${name}" est ENFIN PRÊT !`)
-            })
-
-            shoukaku.on('error', (name, error) => {
-                console.error(`❌ ERREUR Shoukaku sur ${name}:`, error.message)
-            })
-
-            shoukaku.on('close', (name, code, reason) => {
+            // 4. Événements avec types explicites pour éviter le "Implicit any"
+            shoukaku.on('ready', (name: string) => {
                 console.log(
-                    `⚠️ Shoukaku a FERMÉ la connexion (${name}). Code: ${code}, Raison: ${reason || 'Aucune'}`
+                    `⭐ [Lavalink] Le nœud "${name}" est ENFIN CONNECTÉ !`
                 )
             })
 
-            shoukaku.on('disconnect', (name, count) => {
-                console.log(
-                    `ℹ️ Shoukaku DÉCONNECTÉ de ${name}. Joueurs impactés: ${count}`
+            shoukaku.on('error', (name: string, error: Error) => {
+                console.error(
+                    `❌ [Lavalink] Erreur sur ${name}:`,
+                    error.message
                 )
             })
 
-            console.log(
-                `🚀 Système de musique initialisé, attente du signal "Ready" de Lavalink...`
+            shoukaku.on(
+                'close',
+                (name: string, code: number, reason: string) => {
+                    console.warn(
+                        `⚠️ [Lavalink] Connexion fermée sur ${name}. Code: ${code}, Raison: ${reason || 'Inconnue'}`
+                    )
+                }
             )
-        }, 5000)
+
+            shoukaku.on('debug', (name: string, info: string) => {
+                if (
+                    info.toLowerCase().includes('fail') ||
+                    info.toLowerCase().includes('connect')
+                ) {
+                    console.log(`🔍 [Shoukaku Debug] ${name}: ${info}`)
+                }
+            })
+        } catch (err) {
+            console.error(
+                "❌ Erreur lors de l'initialisation de Shoukaku :",
+                err
+            )
+        }
+
+        console.log(`🚀 MultiCord est prêt !`)
     }
 })
