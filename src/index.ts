@@ -1,7 +1,7 @@
 import 'dotenv/config'
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
 import { Shoukaku, Connectors } from 'shoukaku'
-import { PrismaClient } from '@prisma/client' // AJOUT : Import Prisma
+import { PrismaClient } from '@prisma/client'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -10,7 +10,6 @@ import type Event from './templates/Event.js'
 import type MessageCommand from './templates/MessageCommand.js'
 
 // --- 0. Prisma ---
-// AJOUT : Exportation indispensable pour kick.ts et mute.ts
 export const prisma = new PrismaClient()
 
 const { TOKEN, LAVALINK_PASSWORD, LAVALINK_HOST, LAVALINK_PORT } = process.env
