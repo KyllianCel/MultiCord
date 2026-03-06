@@ -1,5 +1,6 @@
 import 'dotenv/config'
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
+import { Shoukaku, Connectors } from 'shoukaku'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -77,6 +78,47 @@ for (const file of eventFiles) {
 
 // --- 4. Login ---
 await client.login(TOKEN)
+
+client.once('ready', () => {
+    const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
+    const port = (process.env.LAVALINK_PORT || '2333').trim()
+    const password = (process.env.LAVALINK_PASSWORD || 'youshallnotpass').trim()
+
+    const Nodes = [
+        {
+            name: 'LocalNode',
+            url: `${host}:${port}`,
+            auth: password,
+            secure: false
+        }
+    ]
+
+    console.log(`🛠️ [Index] Initialisation Shoukaku sur ${host}:${port}...`)
+
+    const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), Nodes, {
+        moveOnDisconnect: true,
+        resume: true,
+        reconnectTries: 10,
+        reconnectInterval: 5
+    })
+
+    // On attache les objets au client pour les commandes
+    ;(client as any).shoukaku = shoukaku
+    ;(client as any).queues = new Map()
+
+    shoukaku.on('ready', (name) =>
+        console.log(`⭐ [LAVALINK] ${name} est CONNECTÉ !`)
+    )
+    shoukaku.on('error', (name, err) =>
+        console.log(`❌ [LAVALINK] Erreur ${name}: ${err.message}`)
+    )
+    shoukaku.on('debug', (name, info) => {
+        if (info.includes('Failed') || info.includes('Connect')) {
+            console.log(`🔍 [LAVALINK DEBUG] ${info}`)
+        }
+    })
+})
+
 if (process.argv.includes('--deploy')) {
     const { default: deployGlobalCommands } =
         await import('./deployGlobalCommands.js')
