@@ -8,7 +8,6 @@ export default new Event({
     async execute(client: Client) {
         console.log(`✅ Logged in as ${client.user?.tag}!`)
 
-        // Configuration sécurisée
         const Nodes = [
             {
                 name: 'LocalNode',
@@ -18,24 +17,43 @@ export default new Event({
             }
         ]
 
-        // Initialisation au bon moment
         const shoukaku = new Shoukaku(
             new Connectors.DiscordJS(client as any),
-            Nodes
+            Nodes,
+            {
+                moveOnDisconnect: true,
+                resume: true,
+                reconnectTries: 5,
+                reconnectInterval: 5
+            }
         )
 
-        // On attache shoukaku au client pour que /play puisse le trouver
         ;(client as any).shoukaku = shoukaku
         ;(client as any).queues = new Map()
 
-        // Événements de statut
-        shoukaku.on('ready', (name) =>
-            console.log(`✅ Lavalink Node "${name}" est PRÊT !`)
-        )
-        shoukaku.on('error', (name, error) =>
-            console.error(`❌ Erreur Lavalink sur ${name}:`, error)
-        )
+        // Événements corrigés pour Shoukaku v4
+        shoukaku.on('ready', (name) => {
+            console.log(`✅ Lavalink Node "${name}" est ENFIN PRÊT !`)
+        })
 
-        console.log(`🚀 MultiCord est prêt !`)
+        shoukaku.on('error', (name, error) => {
+            console.error(`❌ ERREUR Shoukaku sur ${name}:`, error.message)
+        })
+
+        // Utilisation de "_" pour les variables volontairement ignorées (ESLint)
+        shoukaku.on('close', (name, code, reason) => {
+            console.log(
+                `⚠️ Shoukaku a FERMÉ la connexion (${name}). Code: ${code}, Raison: ${reason || 'Aucune'}`
+            )
+        })
+
+        // Correction de la signature : 2 arguments attendus (name, count)
+        shoukaku.on('disconnect', (name, count) => {
+            console.log(
+                `ℹ️ Shoukaku DÉCONNECTÉ de ${name}. Joueurs impactés: ${count}`
+            )
+        })
+
+        console.log(`🚀 Système de musique initialisé, attente de Lavalink...`)
     }
 })
