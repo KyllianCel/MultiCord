@@ -5,6 +5,7 @@ export default new Event({
     name: Events.ClientReady,
     once: true,
     execute(client: Client): void {
-        console.log(`Logged in as ${client.user?.tag as string}!`)
+        console.log(`✅ Logged in as ${client.user?.tag}!`)
+        console.log(`🚀 MultiCord est prêt !`)
     }
 })
