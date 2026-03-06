@@ -11,10 +11,9 @@ const __dirname = path.dirname(__filename)
 export default async function deployGlobalCommands() {
     const TOKEN = process.env.TOKEN
     const CLIENT_ID = process.env.CLIENT_ID
-    const GUILD_ID = process.env.GUILD_ID // On récupère le nouvel ID
 
-    if (!TOKEN || !CLIENT_ID || !GUILD_ID) {
-        console.error('❌ Erreur : TOKEN, CLIENT_ID ou GUILD_ID manquant dans le .env')
+    if (!TOKEN || !CLIENT_ID) {
+        console.error('❌ Erreur : TOKEN, CLIENT_ID manquant dans le .env')
         return
     }
 
@@ -40,11 +39,10 @@ export default async function deployGlobalCommands() {
     const rest = new REST({ version: '10' }).setToken(TOKEN)
 
     try {
-        console.log(`⏳ Discord : Envoi de ${commands.length} commandes au serveur ${GUILD_ID}...`)
+        console.log(`⏳ Discord : Déploiement global de ${commands.length} commandes...`)
         
-        // --- CHANGEMENT ICI : On utilise applicationGuildCommands au lieu de applicationCommands ---
         await rest.put(
-            Routes.applicationGuildCommands(CLIENT_ID, GUILD_ID), 
+            Routes.applicationCommands(CLIENT_ID), 
             { body: commands }
         )
         

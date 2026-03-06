@@ -92,5 +92,6 @@ for (const file of eventFiles) {
 // --- 4. Login ---
 await client.login(TOKEN)
 if (process.argv.includes('--deploy')) {
-    deployGlobalCommands().catch(e => console.error(e));
+    const { default: deployGlobalCommands } = await import('./deployGlobalCommands.js');
+    await deployGlobalCommands();
 }
