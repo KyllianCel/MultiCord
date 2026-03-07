@@ -1,6 +1,5 @@
 import 'dotenv/config'
 import { Client, GatewayIntentBits, Collection, Partials } from 'discord.js'
-import { Shoukaku, Connectors } from 'shoukaku'
 import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -79,7 +78,15 @@ for (const file of eventFiles) {
 // --- 4. Login ---
 await client.login(TOKEN)
 
-client.once('ready', () => {
+import { Events } from 'discord.js'
+import { Shoukaku, Connectors } from 'shoukaku'
+
+// Utilise 'clientReady' au lieu de 'ready' pour éviter le Warning
+client.once(Events.ClientReady, (readyClient) => {
+    console.log(
+        `✅ Bot connecté : ${readyClient.user.tag} (${readyClient.user.id})`
+    )
+
     const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
     const port = (process.env.LAVALINK_PORT || '2333').trim()
     const password = (process.env.LAVALINK_PASSWORD || 'youshallnotpass').trim()
@@ -93,29 +100,31 @@ client.once('ready', () => {
         }
     ]
 
-    console.log(`🛠️ [Index] Initialisation Shoukaku sur ${host}:${port}...`)
+    // On initialise Shoukaku APRÈS s'être assuré que le client est prêt
+    const shoukaku = new Shoukaku(
+        new Connectors.DiscordJS(readyClient),
+        Nodes,
+        {
+            moveOnDisconnect: true,
+            resume: false, // DÉSACTIVE le resume pour le debug, c'est souvent ça qui cause le code 1000
+            reconnectTries: 5,
+            reconnectInterval: 5
+        }
+    )
 
-    const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), Nodes, {
-        moveOnDisconnect: true,
-        resume: true,
-        reconnectTries: 10,
-        reconnectInterval: 5
-    })
-
-    // On attache les objets au client pour les commandes
-    ;(client as any).shoukaku = shoukaku
-    ;(client as any).queues = new Map()
+    ;(readyClient as any).shoukaku = shoukaku
+    ;(readyClient as any).queues = new Map()
 
     shoukaku.on('ready', (name) =>
-        console.log(`⭐ [LAVALINK] ${name} est CONNECTÉ !`)
+        console.log(`⭐ [LAVALINK] ${name} est enfin OPÉRATIONNEL !`)
     )
     shoukaku.on('error', (name, err) =>
-        console.log(`❌ [LAVALINK] Erreur ${name}: ${err.message}`)
+        console.log(`❌ [LAVALINK] Erreur sur ${name}: ${err.message}`)
     )
+
+    // Log de debug pour voir le passage des étapes
     shoukaku.on('debug', (name, info) => {
-        if (info.includes('Failed') || info.includes('Connect')) {
-            console.log(`🔍 [LAVALINK DEBUG] ${info}`)
-        }
+        if (info.includes('Session')) console.log(`🔍 [SESSION] ${info}`)
     })
 })
 
