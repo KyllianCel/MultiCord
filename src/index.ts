@@ -4,7 +4,7 @@ import { readdirSync, lstatSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
 import type ApplicationCommand from './templates/ApplicationCommand.js'
-import type Event from './templates/Event.js'
+import Event from './templates/Event.js'
 import type MessageCommand from './templates/MessageCommand.js'
 
 const { TOKEN } = process.env
@@ -78,54 +78,31 @@ for (const file of eventFiles) {
 // --- 4. Login ---
 await client.login(TOKEN)
 
-import { Events } from 'discord.js'
-import { Shoukaku, Connectors } from 'shoukaku'
+import { Events, Interaction } from 'discord.js'
 
-// Utilise 'clientReady' au lieu de 'ready' pour éviter le Warning
-client.once(Events.ClientReady, (readyClient) => {
-    console.log(
-        `✅ Bot connecté : ${readyClient.user.tag} (${readyClient.user.id})`
-    )
-
-    const host = (process.env.LAVALINK_HOST || '127.0.0.1').trim()
-    const port = (process.env.LAVALINK_PORT || '2333').trim()
-    const password = (process.env.LAVALINK_PASSWORD || 'youshallnotpass').trim()
-
-    const Nodes = [
-        {
-            name: 'LocalNode',
-            url: `${host}:${port}`,
-            auth: password,
-            secure: false
+export default new Event({
+    name: Events.InteractionCreate,
+    async execute(interaction: Interaction) {
+        try {
+            if (interaction.isChatInputCommand()) {
+                const command = (interaction.client as any).commands.get(
+                    interaction.commandName
+                )
+                if (!command) return
+                await command.execute(interaction)
+            } else if (interaction.isAutocomplete()) {
+                const command = (interaction.client as any).commands.get(
+                    interaction.commandName
+                )
+                if (!command || !command.autocomplete) return
+                await command.autocomplete(interaction)
+            }
+        } catch (error: any) {
+            // On ignore l'erreur 10062 (Unknown Interaction) qui est juste un problème de délai
+            if (error.code === 10062) return
+            console.error('❌ Erreur Interaction:', error)
         }
-    ]
-
-    // On initialise Shoukaku APRÈS s'être assuré que le client est prêt
-    const shoukaku = new Shoukaku(
-        new Connectors.DiscordJS(readyClient),
-        Nodes,
-        {
-            moveOnDisconnect: true,
-            resume: false, // DÉSACTIVE le resume pour le debug, c'est souvent ça qui cause le code 1000
-            reconnectTries: 5,
-            reconnectInterval: 5
-        }
-    )
-
-    ;(readyClient as any).shoukaku = shoukaku
-    ;(readyClient as any).queues = new Map()
-
-    shoukaku.on('ready', (name) =>
-        console.log(`⭐ [LAVALINK] ${name} est enfin OPÉRATIONNEL !`)
-    )
-    shoukaku.on('error', (name, err) =>
-        console.log(`❌ [LAVALINK] Erreur sur ${name}: ${err.message}`)
-    )
-
-    // Log de debug pour voir le passage des étapes
-    shoukaku.on('debug', (name, info) => {
-        if (info.includes('Session')) console.log(`🔍 [SESSION] ${info}`)
-    })
+    }
 })
 
 if (process.argv.includes('--deploy')) {
