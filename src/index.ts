@@ -37,7 +37,7 @@ global.client = Object.assign(
 const Nodes = [{
     name: 'LocalNode',
     url: 'localhost:2333',
-    auth: 'youshallnotpass'
+    auth: process.env.LAVALINK_PASSWORD,
 }];
 
 const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), Nodes);

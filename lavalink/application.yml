@@ -3,7 +3,12 @@ server:
   address: 0.0.0.0
 lavalink:
   server:
-    password: "youshallnotpass"
+    password: "${LAVALINK_PASSWORD}"
+    ratelimit:
+      ipBlocks: ["${IPV6_BLOCK}"] # Ton bloc IPv6 Hetzner
+      strategy: "LoadBalancer"
+      searchTriggers: ["429"]
+      retryLimit: -1
     sources:
       youtube: true
       soundcloud: true
