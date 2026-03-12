@@ -3,7 +3,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, EmbedBuilder, Message
 export default {
     data: new SlashCommandBuilder()
         .setName('help')
-        .setDescription('Affiche la liste de toutes les commandes rangées par catégorie.'),
+        .setDescription('Affiche la liste de toutes les commandes rangées par catégorie'),
 
     async execute(interaction: ChatInputCommandInteraction) {
         // On récupère toutes les commandes enregistrées dans le client

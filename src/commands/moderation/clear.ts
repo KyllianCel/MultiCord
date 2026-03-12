@@ -10,7 +10,7 @@ import prisma from '../../database.js'
 export default {
     data: new SlashCommandBuilder()
         .setName('clear')
-        .setDescription('Supprime un nombre précis de messages dans le salon.')
+        .setDescription('Supprime un nombre précis de messages dans le salon')
         .addIntegerOption((option) =>
             option
                 .setName('montant')

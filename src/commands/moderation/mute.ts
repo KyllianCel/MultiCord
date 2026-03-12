@@ -5,11 +5,12 @@ import {
     ChatInputCommandInteraction,
     GuildMember
 } from 'discord.js'
+import prisma from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()
         .setName('mute')
-        .setDescription('Mettre un membre en sourdine (Timeout)')
+        .setDescription('Mettre un membre en sourdine')
         .addUserOption((option) =>
             option
                 .setName('cible')

@@ -3,7 +3,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, AutocompleteInteracti
 export default {
     data: new SlashCommandBuilder()
         .setName('play')
-        .setDescription('Joue une musique (Technique du Ghost Bridge)')
+        .setDescription('Joue une musique')
         .addStringOption(option => 
             option.setName('recherche')
                 .setDescription('Titre ou URL')
