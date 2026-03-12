@@ -84,7 +84,8 @@ export default {
                 player = await shoukaku.joinVoiceChannel({
                     guildId: interaction.guildId!,
                     channelId: voiceChannel.id,
-                    shardId: 0
+                    shardId: interaction.guild?.shardId ?? 0,
+                    deaf: true 
                 });
 
                 // On ajoute un catch sur le playTrack pour éviter que le bot ne quitte sans rien dire
