@@ -10,34 +10,25 @@ export default {
         const shoukaku = client.shoukaku;
         const guildId = interaction.guildId!;
 
-        // 1. On récupère le lecteur (player) pour ce serveur
         const player = shoukaku.players.get(guildId);
         const queue = client.queues.get(guildId);
 
-        // 2. Vérifications de sécurité
-        if (!player) {
-            return interaction.reply({ 
-                content: "❌ Je ne joue pas de musique actuellement sur ce serveur.", 
-                flags: [MessageFlags.Ephemeral] 
-            });
-        }
+        if (!player) return interaction.reply({ content: "❌ Rien ne tourne.", ephemeral: true });
 
-        if (!queue || queue.tracks.length === 0) {
-            return interaction.reply({ 
-                content: "❌ La file d'attente est vide.", 
-                flags: [MessageFlags.Ephemeral] 
-            });
+        // Si c'est la dernière musique, on appelle STOP
+        if (!queue || queue.tracks.length <= 1) {
+            return await client.commands.get('stop').execute(interaction);
         }
 
         try {
-            // 3. On arrête la piste actuelle
-            // Cela va déclencher l'événement 'end' qu'on a créé dans play.ts
-            await player.stopTrack();
+            await player.stopTrack(); // Cela déclenchera l'événement 'end' dans play.ts, qui mettra à jour la carte
 
-            return interaction.reply(`⏩ Musique passée par **${interaction.user.username}** !`);
+            // Réponse éphémère ou normale avec mention
+            const content = `⏩ Musique passée par <@${interaction.user.id}> !`;
+            if (interaction.isButton()) return interaction.reply({ content, ephemeral: false });
+            return interaction.reply(content);
         } catch (e) {
-            console.error(e);
-            return interaction.reply("❌ Erreur lors du skip.");
+            return interaction.reply({ content: "❌ Erreur skip.", ephemeral: true });
         }
     },
 };

@@ -5,7 +5,7 @@ lavalink:
   server:
     password: "${LAVALINK_PASSWORD}"
     ratelimit:
-      ipBlocks: ["${IPV6_BLOCK}"] # Ton bloc IPv6 Hetzner
+      ipBlocks: ["${IPV6_BLOCK}"]
       strategy: "LoadBalancer"
       searchTriggers: ["429"]
       retryLimit: -1
