@@ -22,7 +22,6 @@ export default {
             const channel = oldState.guild.channels.cache.get(botChannelId) as any;
             if (!channel) return;
 
-            // On filtre les bots pour voir s'il reste des "vrais" humains
             const humanMembers = channel.members.filter((m: any) => !m.user.bot);
             
             console.log(`👥 Membres restants dans le vocal : ${humanMembers.size}`);
@@ -41,7 +40,6 @@ export default {
             }
         }
 
-        // Si quelqu'un revient, on annule
         if (newState.channelId === botChannelId && oldState.channelId !== botChannelId) {
             const timeout = leaveTimeouts.get(guildId);
             if (timeout) {

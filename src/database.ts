@@ -5,7 +5,7 @@ import { createClient } from '@libsql/client';
 import path from 'path';
 
 // On force le chemin vers le dossier prisma, peu importe le .env
-// Cela garantit que le bot et Prisma CLI utilisent le MÊME fichier.
+// Garantit que le bot et Prisma utilisent le meme fichier.
 const dbPath = path.resolve(process.cwd(), 'prisma', 'dev.db');
 
 const libsql = createClient({ url: `file:${dbPath}` });

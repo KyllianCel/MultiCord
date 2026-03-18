@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-var-requires, @typescript-eslint/no-unsafe-assignment, @typescript-eslint/no-unsafe-member-access */
 import { readdirSync } from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -37,7 +36,6 @@ export default new MessageCommand({
         }
 
         // On définit le chemin absolu vers le dossier des commandes slash
-        // Ce fichier est dans messageCommands, on remonte d'un cran pour aller dans src, puis dans commands
         const commandsPath = path.join(__dirname, '..', 'commands')
 
         if (
@@ -53,7 +51,6 @@ export default new MessageCommand({
 
             for (const file of commandFiles) {
                 const filePath = path.join(commandsPath, file)
-                // Utilisation de file:// pour Windows et chemin absolu
                 const command: ApplicationCommand = (
                     await import(`file://${filePath}`)
                 ).default as ApplicationCommand

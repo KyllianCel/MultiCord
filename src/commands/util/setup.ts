@@ -23,7 +23,7 @@ export default {
         const logChannel = interaction.options.getChannel('logs')!;
         const guildId = interaction.guildId!;
 
-        // "Upsert" : Met à jour si ça existe, sinon crée l'entrée
+        // Met à jour si ça existe, sinon crée l'entrée
         await prisma.guildConfig.upsert({
             where: { guildId: guildId },
             update: { logChannelId: logChannel.id },

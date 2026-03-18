@@ -6,7 +6,7 @@ export default new Event({
     async execute(interaction: BaseInteraction): Promise<void> {
         const client = interaction.client as any;
 
-        // 1. GESTION DE L'AUTOCOMPLÉTION (Doit être AVANT ou EN DEHORS du check ChatInputCommand)
+        // gestion de l'autocomplétion
         if (interaction.isAutocomplete()) {
             const command = client.commands.get(interaction.commandName);
             if (!command || !command.autocomplete) return;
@@ -19,7 +19,7 @@ export default new Event({
             return; // On s'arrête ici pour une interaction d'autocomplétion
         }
 
-        // 2. GESTION DES COMMANDES SLASH
+        // gestion des commandes slash
         if (interaction.isChatInputCommand()) {
             const command = client.commands.get(interaction.commandName);
             if (!command) return;

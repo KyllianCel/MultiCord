@@ -1,29 +1,78 @@
-# Typescript-Discord.js-v14-Template
+# 🛡️ MultiCord 
 
-This repository provides a rapid deployment template for building Discord bots using Discord.js version 14 with Typescript. It includes ready-to-use code for handling commands, events, and interactions, so you can get your bot up and running quickly.
+**MultiCord** est un bot Discord multifonction développé en **TypeScript**. Il comporte un moteur musical avec un système de modération soutenu par une base de données Ce projet a été réalisé dans le cadre de notre licence informatique.
 
-## 📦 Installation
 
-Follow these steps to get started:
+## ✨ Fonctionnalités Principales
 
-1. **Clone the Repository:** Use the command below to clone the project.
+### 🎵 Module Musique
 
+  * **Moteur Lavalink v4** : Traitement du flux audio pour garantir une lecture sans ralentir le bot
+  * **Interface Interactive** : Cartes de lecture visuelles avec pochette, durée et boutons de contrôle (Skip, Stop)
+  * **Optimisation de l'experience utilisateur** : Système d'autocomplétion en temps réel pour la recherche de morceaux et retrait automatique des boutons en fin de lecture pour éviter les erreurs de clic.
+
+### 🛡️ Module Modération & Sécurité
+
+  * **Sanctions Persistantes** : Enregistrement des avertissements (Warnings) dans une base de données **SQLite** via l'ORM **Prisma**.
+  * **Gestion de la Hiérarchie** : Vérification automatique des droits pour empêcher toute action sur un membre ayant un rôle supérieur au bot.
+  * **Nettoyage de Masse** : Suppression ciblée ou globale de messages (jusqu'à 100) pour lutter contre le spam.
+
+-----
+
+## 📜 Liste des Commandes
+
+| Catégorie | Commande | Description |
+| :--- | :--- | :--- |
+| **Modération** | `/ban` / `/unban` | Bannit ou débannit un membre du serveur. |
+| | `/kick` | Expulse un membre du serveur. |
+| | `/mute` | Réduit un membre au silence (Timeout). |
+| | `/warn` / `/delwarn` | Gère les avertissements persistants en base de données. |
+| | `/clear` | Supprime un nombre précis de messages. |
+| **Musique** | `/play` | Recherche et joue une musique. |
+| | `/queue` | Affiche la liste des musiques à venir. |
+| | `/skip` | Passe à la musique suivante. |
+| | `/stop` | Arrête la musique et vide la file d'attente. |
+| **Utilitaire** | `/help` | Affiche les commandes. |
+| | `/ping` | Vérifie si le bot est actif. |
+| | `/userinfo` | Affiche les statistiques et informations d'un membre. |
+| | `/warnings` | Liste les avertissements d'un membre. |
+| | `/settings` | Affiche la configuration actuelle du bot. |
+| | `/setup` | Configure les paramètres pour le serveur. |
+
+-----
+
+## 🛠️ Stack Technique & Infrastructure
+
+  * **Langage** : TypeScript pour un code sécurisé et typé.
+  * **Base de données** : SQLite gérée par l'ORM Prisma.
+  * **Serveur Audio** : Lavalink v4 tournant sous Java 21.
+  * **Hébergement** : Déploiement sur un **VPS Linux**.
+  * **Gestion de processus** : **PM2** pour garantir une disponibilité 24h/24 et un redémarrage automatique en cas de crash.
+
+-----
+
+## 📥 Installation & Déploiement
+
+1.  **Pré-requis** : Node.js (v18+), Java 21, et un serveur Lavalink configuré sur le port 2333.
+2.  **Installation** :
     ```bash
-    git clone https://github.com/OfficialDelta/Typescript-Discord.js-v14-Template.git YOUR_PROJECT_NAME
+    npm install
+    npx prisma generate
+    npx prisma db push
+    ```
+3.  **Déploiement des commandes** :
+    ```bash
+    npm run deploy
+    ```
+4.  **Lancement** :
+    ```bash
+    pm2 start lavalink/Lavalink.jar --name lavalink
+    pm2 start "wait-on tcp:2333 && npx tsx src/index.ts" --name "multicord-bot" --restart-delay 5000
     ```
 
-2. **Configure Environment:** Rename `RENAME.env` to `.env`, and update the `.env` and `config.json` files with the required settings specific to your bot.
+-----
 
-3. **Customize Commands:** Follow the provided templates to create and customize commands for your bot. Everything is set up to make this process as smooth as possible.
+### 👤 Auteurs
 
-## 🏗️ Building
-
-Use the predefined scripts in the `package.json` file to build and manage your project. These scripts streamline various tasks, such as compiling and linting.
-
-## ✉️ Support & Contributions
-
-Feel free to open issues or submit pull requests if you have suggestions, questions, or run into any problems. Your contributions are welcome!
-
----
-
-Happy coding, and enjoy building your Discord bot with the Typescript-Discord.js-v14-Template! 🚀
+  * **Kyllian Celisse**
+  * **Julien Gosselet**

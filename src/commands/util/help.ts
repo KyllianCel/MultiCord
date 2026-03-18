@@ -7,7 +7,7 @@ export default {
 
     async execute(interaction: ChatInputCommandInteraction) {
         // On récupère toutes les commandes enregistrées dans le client
-        const commands = interaction.client.commands;
+        const commands = (interaction.client as any).commands;
 
         const embed = new EmbedBuilder()
             .setColor('#5865F2')
@@ -17,7 +17,6 @@ export default {
             .setFooter({ text: `Demandé par ${interaction.user.tag} • ${commands.size} commandes au total` })
             .setTimestamp();
 
-        // Objet pour stocker les commandes par catégorie : { 'modération': ['/ban', '/kick'], 'util': ['/help'] }
         const categories: { [key: string]: string[] } = {};
 
         commands.forEach((cmd: any) => {
@@ -30,7 +29,6 @@ export default {
             categories[catName].push(`**/${cmd.data.name}**\n└ ${cmd.data.description}`);
         });
 
-        // On ajoute chaque catégorie comme un champ dans l'Embed
         for (const [category, cmdList] of Object.entries(categories)) {
             embed.addFields({
                 name: category,
@@ -39,7 +37,6 @@ export default {
             });
         }
 
-        // On répond de façon éphémère (pour ne pas polluer le salon)
         return await interaction.reply({
             embeds: [embed],
             flags: [MessageFlags.Ephemeral]
@@ -47,15 +44,12 @@ export default {
     },
 };
 
-/**
- * Petite fonction utilitaire pour rendre les noms de dossiers plus jolis
- */
+
 function catNameClean(name: string): string {
     const icons: { [key: string]: string } = {
         moderation: '🛡️ MODÉRATION',
         util: '🛠️ UTILITAIRE',
         musique: '🎶 MUSIQUE',
-        admin: '👑 ADMINISTRATION'
     };
     
     return icons[name.toLowerCase()] || `📁 ${name.toUpperCase()}`;

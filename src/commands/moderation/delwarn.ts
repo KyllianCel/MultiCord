@@ -28,9 +28,7 @@ export default {
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers),
 
-    /**
-     * Gestionnaire d'Autocomplete : Propose les warns en temps réel
-     */
+
     async autocomplete(interaction: AutocompleteInteraction) {
         // On récupère l'ID de la cible sélectionnée dans la première option
         const targetId = interaction.options.get('cible')?.value as string
@@ -62,15 +60,12 @@ export default {
         }
     },
 
-    /**
-     * Exécution de la suppression
-     */
     async execute(interaction: ChatInputCommandInteraction) {
         const warnId = interaction.options.getInteger('id')!
         const guildId = interaction.guildId!
 
         try {
-            // 1. Vérification de l'existence du warn
+            // Vérification de l'existence du warn
             const warn = await prisma.warn.findUnique({
                 where: { id: warnId }
             })
@@ -82,7 +77,7 @@ export default {
                 })
             }
 
-            // 2. Suppression dans la base de données
+            // Suppression dans la base de données
             await prisma.warn.delete({
                 where: { id: warnId }
             })
@@ -96,7 +91,7 @@ export default {
                 .addFields({ name: 'Raison originale', value: warn.reason })
                 .setTimestamp()
 
-            // 3. Envoi du log si configuré (Point 2)
+            // Envoi du log si configuré
             const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });

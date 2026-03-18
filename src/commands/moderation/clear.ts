@@ -33,7 +33,7 @@ export default {
         const target = interaction.options.getUser('cible')
         const channel = interaction.channel as TextChannel
 
-        // Sécurité : Vérifier si on est bien dans un salon textuel
+        // Vérifier si on est bien dans un salon textuel
         if (!channel || !('bulkDelete' in channel)) {
             return interaction.reply({
                 content:
@@ -46,10 +46,10 @@ export default {
             let messagesToDelete
 
             if (target) {
-                // LOGIQUE FILTRÉE : On récupère les 100 derniers messages
+                // On récupère les 100 derniers messages
                 const messages = await channel.messages.fetch({ limit: 100 })
 
-                // On filtre pour ne garder que ceux de la cible et on prend le "montant" demandé
+                // On filtre pour ne garder que ceux de la cible et on prend le"montan demandé
                 messagesToDelete = messages
                     .filter((m) => m.author.id === target.id)
                     .toJSON()
@@ -73,8 +73,7 @@ export default {
                 .setFooter({ text: "Ce message s'effacera dans 5 secondes." })
 
             await interaction.reply({ embeds: [embed] })
-
-            // --- AJOUT LOGS MODÉRATION ---
+            
             const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });

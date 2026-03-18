@@ -16,14 +16,13 @@ export default {
                 .setName('cible')
                 .setDescription('Recherchez l\'utilisateur banni par nom ou ID')
                 .setRequired(true)
-                .setAutocomplete(true) // On active l'autocomplétion ici
+                .setAutocomplete(true) 
         )
         .addStringOption((option) =>
             option.setName('raison').setDescription('La raison du débannissement')
         )
         .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers),
 
-    // --- LOGIQUE DE RECHERCHE DES BANNIS ---
     async autocomplete(interaction: AutocompleteInteraction) {
         if (!interaction.guild) return;
 
@@ -60,21 +59,20 @@ export default {
         await interaction.deferReply();
 
         try {
-            // 1. On récupère l'utilisateur banni avant de le unban pour l'Embed
+            // On récupère l'utilisateur banni avant de le unban 
             const banInfo = await interaction.guild.bans.fetch(userId);
             const target = banInfo.user;
 
-            // 2. Exécution du débannissement
+            // Exécution du débannissement
             await interaction.guild.members.unban(userId, reason);
 
-            // 3. Tentative de DM
+            // Tentative de DM
             try {
                 await target.send(`✅ Tu as été débanni de **${interaction.guild.name}**.\n**Raison :** ${reason}`);
             } catch {
                 console.log(`Impossible de DM ${target.tag}`);
             }
 
-            // 4. Embed (Style Ban)
             const embed = new EmbedBuilder()
                 .setColor(0x00ff00)
                 .setTitle('🔓 Membre débanni')
@@ -85,7 +83,7 @@ export default {
                 )
                 .setTimestamp();
 
-            // 5. Logs
+            // Logs
             const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });

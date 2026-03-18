@@ -15,12 +15,12 @@ export default {
     async execute(interaction: ChatInputCommandInteraction) {
         const guildId = interaction.guildId!;
 
-        // 1. Récupération de la configuration en base de données
+        // Récupération de la configuration en base de données
         const config = await prisma.guildConfig.findUnique({
             where: { guildId: guildId }
         });
 
-        // 2. Vérification de l'existence du salon de logs dans le cache Discord
+        // Vérification de l'existence du salon de logs dans le cache Discord
         const logChannel = config?.logChannelId 
             ? interaction.guild?.channels.cache.get(config.logChannelId) 
             : null;

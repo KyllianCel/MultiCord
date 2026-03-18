@@ -59,7 +59,7 @@ export default {
         // Application du timeout
         await target.timeout(msDuration, reason)
 
-        // Création de l'Embed
+        
         const embed = new EmbedBuilder()
             .setColor(0x707070)
             .setTitle('🔇 Membre mis en sourdine')
@@ -74,7 +74,7 @@ export default {
             )
             .setTimestamp()
 
-        // ENVOI DES LOGS
+        
         const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });

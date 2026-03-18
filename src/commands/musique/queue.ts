@@ -10,24 +10,38 @@ export default {
         const queue = client.queues.get(interaction.guildId);
 
         if (!queue || queue.tracks.length === 0) {
-            return interaction.reply({ content: "❌ La file d'attente est vide.", flags: [MessageFlags.Ephemeral] });
+            return interaction.reply({
+                content: "❌ La file d'attente est vide.",
+                flags: [MessageFlags.Ephemeral]
+            });
         }
 
-        // On prépare l'affichage
+        // On récupère la musique actuelle
         const nowPlaying = queue.tracks[0];
-        const upcoming = queue.tracks.slice(1, 11); // On affiche les 10 prochaines
+        // On récupère les 10 suivantes
+        const upcoming = queue.tracks.slice(1, 11);
 
         const embed = new EmbedBuilder()
-            .setTitle(`File d'attente pour ${interaction.guild.name}`)
-            .setColor('#00ff00')
+            .setTitle(`🎶 File d'attente - ${interaction.guild?.name}`)
+            .setColor('#2b2d31')
             .addFields(
-                { name: '🎵 En train de jouer', value: `[${nowPlaying.info.title}](${nowPlaying.info.uri})` }
+                {
+                    name: '🎵 En train de jouer',
+                    value: `**[${nowPlaying.trackData.info.title}](${nowPlaying.trackData.info.uri})**\nDemandé par : <@${nowPlaying.requester.id}>`
+                }
             );
 
         if (upcoming.length > 0) {
-            const list = upcoming.map((t, i) => `**${i + 1}.** [${t.info.title}](${t.info.uri})`).join('\n');
+            const list = upcoming
+                .map((t: any, i: number) => `**${i + 1}.** [${t.trackData.info.title}](${t.trackData.info.uri}) — <@${t.requester.id}>`)
+                .join('\n');
+
             embed.addFields({ name: '⏭️ À suivre', value: list });
         }
+
+        // On affiche le nombre total de musiques restantes
+        const totalTracks = queue.tracks.length;
+        embed.setFooter({ text: `${totalTracks} musique(s) au total dans la file` });
 
         return interaction.reply({ embeds: [embed] });
     },

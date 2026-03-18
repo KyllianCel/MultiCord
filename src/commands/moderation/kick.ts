@@ -5,6 +5,7 @@ import {
     ChatInputCommandInteraction,
     GuildMember
 } from 'discord.js'
+import prisma from '../../database.js'
 
 export default {
     data: new SlashCommandBuilder()
@@ -19,7 +20,6 @@ export default {
         .addStringOption((option) =>
             option.setName('raison').setDescription("La raison de l'expulsion")
         )
-        // Ici on utilise KickMembers au lieu de BanMembers
         .setDefaultMemberPermissions(PermissionFlagsBits.KickMembers),
 
     async execute(interaction: ChatInputCommandInteraction) {
@@ -34,7 +34,7 @@ export default {
             })
         }
 
-        // Vérification si le bot peut kick (hiérarchie des rôles)
+        // Vérifie si le bot peut kick
         if (!target.kickable) {
             return interaction.reply({
                 content:
@@ -43,7 +43,6 @@ export default {
             })
         }
 
-        // Optionnel : Envoyer un message privé à l'utilisateur avant le kick
         try {
             await target.send(
                 `Tu as été expulsé de **${interaction.guild?.name}** pour la raison suivante : ${reason}`
@@ -74,7 +73,7 @@ export default {
             )
             .setTimestamp()
 
-        // ENVOI DES LOGS
+        
         const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });

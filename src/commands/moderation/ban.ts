@@ -27,7 +27,7 @@ export default {
         const reason =
             interaction.options.getString('raison') ?? 'Aucune raison fournie'
 
-        // 1. Vérifications de base
+        // Vérifications de base
         if (!target) {
             return interaction.reply({
                 content: 'Utilisateur introuvable sur ce serveur.',
@@ -43,7 +43,7 @@ export default {
             })
         }
 
-        // 2. Envoi du message privé (DM) avant le bannissement
+        // Envoi du message privé (DM) avant le bannissement
         try {
             await target.send(
                 `⚠️ Tu as été banni du serveur **${interaction.guild?.name}**.\n**Raison :** ${reason}`
@@ -53,10 +53,10 @@ export default {
             console.log(`Impossible d'envoyer un DM à ${target.user.tag}.`)
         }
 
-        // 3. Exécution du bannissement
+        // Exécution du bannissement
         await target.ban({ reason })
 
-        // 4. Création de l'Embed (Déclaration AVANT les logs)
+        // Création de l'Embed (Déclaration AVANT les logs)
         const embed = new EmbedBuilder()
             .setColor(0xff0000)
             .setTitle('🔨 Membre banni')
@@ -75,7 +75,7 @@ export default {
             )
             .setTimestamp()
 
-        // 5. ENVOI DES LOGS (Maintenant l'embed existe !)
+        // Envoi des logs
         const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });
@@ -87,7 +87,7 @@ export default {
                 }
             }
 
-        // 6. Réponse à l'interaction
+        // Réponse à l'interaction
         return interaction.reply({ embeds: [embed] })
     }
 }

@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unsafe-member-access */
 import { REST } from '@discordjs/rest'
 import { RESTPostAPIApplicationCommandsJSONBody, Routes } from 'discord.js'
 import { readdirSync, lstatSync } from 'fs'
@@ -20,7 +19,6 @@ export default async function deployGlobalCommands() {
     const commands: RESTPostAPIApplicationCommandsJSONBody[] = []
     const commandsPath = path.join(__dirname, 'commands')
 
-    // Chargement simplifié pour le test
     const commandItems = readdirSync(commandsPath)
     for (const item of commandItems) {
         const itemPath = path.join(commandsPath, item)

@@ -31,7 +31,7 @@ export default {
         const guildId = interaction.guildId!
 
         try {
-            // 1. Enregistrement Base de données
+            // Enregistrement Base de données
             await prisma.warn.create({
                 data: {
                     userId: target.id,
@@ -41,7 +41,6 @@ export default {
                 }
             })
 
-            // 2. Création de l'Embed (Déclaration AVANT utilisation)
             const embed = new EmbedBuilder()
                 .setColor(0xffff00)
                 .setTitle('⚠️ Avertissement enregistré')
@@ -56,7 +55,7 @@ export default {
                 )
                 .setTimestamp()
 
-            // 3. LOGS (Point 2) - On utilise l'embed ici
+            // Logs
             const config = await prisma.guildConfig.findUnique({
                 where: { guildId: interaction.guildId! }
             });
@@ -68,7 +67,7 @@ export default {
                 }
             }
 
-            // 4. Message Privé (DM)
+            // Message Privé 
             try {
                 await target.send(
                     `⚠️ Tu as reçu un warn sur **${interaction.guild?.name}** pour : ${reason}`
@@ -77,7 +76,7 @@ export default {
                 console.log('DMs fermés.')
             }
 
-            // 5. Réponse à l'interaction
+            // Réponse à l'interaction
             return interaction.reply({ embeds: [embed] })
         } catch (error: any) {
             console.error(error)

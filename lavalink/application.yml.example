@@ -1,0 +1,34 @@
+server:
+  port: 2333
+  address: 0.0.0.0
+
+lavalink:
+  plugins:
+    - dependency: "dev.lavalink.youtube:youtube-plugin:1.18.0"
+      repository: "https://maven.lavalink.dev/releases"
+  server:
+    password: "${LAVALINK_PASSWORD}"
+    ratelimit:
+      ipBlocks: ["${IPV6_BLOCK}"]
+      strategy: "LoadBalance"
+      searchTriggers: ["429"]
+      retryLimit: -1
+    sources:
+      youtube: false
+      soundcloud: true
+    bufferDurationMs: 400
+    frameBufferDurationMs: 5000
+
+plugins:
+  youtube:
+    enabled: true
+    allowSearch: true
+    clients:
+      - "TV"
+    oauth:
+      enabled: true
+      refreshToken: "TOKEN"
+logging:
+  level:
+    root: INFO
+    lavalink: INFO

@@ -15,7 +15,7 @@ const { TOKEN } = process.env
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
 
-// --- 1. Client ---
+// Client
 global.client = Object.assign(
     new Client({
         intents: [
@@ -33,7 +33,7 @@ global.client = Object.assign(
 )
 
 
-// --- 2. Lavalink ---
+// Lavalink
 const Nodes = [{
     name: 'LocalNode',
     url: 'localhost:2333',
@@ -47,7 +47,7 @@ const shoukaku = new Shoukaku(new Connectors.DiscordJS(client), Nodes);
 shoukaku.on('ready', (name) => console.log(`✅ Lavalink Node "${name}" prêt !`));
 shoukaku.on('error', (name, error) => console.error(`❌ Erreur Lavalink:`, error));
 
-// --- 3. Loader (Commands & Events) ---
+// Loader
 const commandsPath = path.join(__dirname, 'commands')
 const commandItems = readdirSync(commandsPath)
 
@@ -89,7 +89,7 @@ for (const file of eventFiles) {
     else client.on(event.name, (...args) => event.execute(...args))
 }
 
-// --- 4. Login ---
+// Login
 await client.login(TOKEN)
 if (process.argv.includes('--deploy')) {
     const { default: deployGlobalCommands } = await import('./deployGlobalCommands.js');

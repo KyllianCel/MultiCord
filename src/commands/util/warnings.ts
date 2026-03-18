@@ -5,7 +5,7 @@ import {
     ChatInputCommandInteraction, 
     GuildMember 
 } from 'discord.js';
-import prisma from '../../database.js'; // Import du client Prisma
+import prisma from '../../database.js'; 
 
 export default {
     data: new SlashCommandBuilder()
@@ -46,7 +46,6 @@ export default {
             });
         }
 
-        // Création de l'Embed pour afficher la liste
         const embed = new EmbedBuilder()
             .setColor(0x0099ff)
             .setTitle(`Liste des avertissements - ${target.user.tag}`)
@@ -54,7 +53,7 @@ export default {
             .setDescription(`Cet utilisateur possède **${userWarns.length}** avertissement(s).`)
             .setTimestamp();
 
-        // On ajoute chaque warn dans l'embed (limité aux 25 derniers pour éviter les erreurs d'Embed)
+        // On ajoute chaque warn
         userWarns.slice(0, 25).forEach((warn, index) => {
             embed.addFields({
                 name: `Warn #${warn.id} - ${warn.createdAt.toLocaleDateString()}`,

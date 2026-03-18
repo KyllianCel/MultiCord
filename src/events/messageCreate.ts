@@ -15,7 +15,6 @@ interface Config {
     clientId: string
 }
 
-// On remonte de DEUX niveaux pour trouver le config.json dans dist/
 const config = require(path.join(__dirname, '../../config.json')) as Config
 
 export default new Event({

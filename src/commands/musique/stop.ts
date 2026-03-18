@@ -3,7 +3,7 @@ import { ChatInputCommandInteraction, SlashCommandBuilder, MessageFlags } from '
 export default {
     data: new SlashCommandBuilder()
         .setName('stop')
-        .setDescription('Arrête la musique'),
+        .setDescription('Arrête la musique et vide la file'),
 
     async execute(interaction: any) {
         const client = interaction.client as any;
@@ -13,20 +13,43 @@ export default {
         const player = shoukaku.players.get(guildId);
         const queue = client.queues.get(guildId);
 
+        // Vérification si un player existe
         if (!player) {
             const msg = "❌ Rien ne tourne actuellement.";
-            return interaction.replied ? interaction.followUp({ content: msg, flags: [MessageFlags.Ephemeral] }) : interaction.reply({ content: msg, flags: [MessageFlags.Ephemeral] });
+            if (interaction.replied || interaction.deferred) {
+                return interaction.followUp({ content: msg, flags: [MessageFlags.Ephemeral] });
+            }
+            return interaction.reply({ content: msg, flags: [MessageFlags.Ephemeral] });
         }
 
-        // On retire les boutons de la carte avant de partir
-        if (queue && queue.message) {
-            await queue.message.edit({ components: [] }).catch(() => {});
+        try {
+            // Nettoyage de l'interface
+            if (queue && queue.message) {
+                await queue.message.edit({ components: [] }).catch(() => {});
+            }
+
+            
+            // On accède à la Map idleTimers via le fichier de commande ou le client
+            const idleTimers = (client as any).idleTimers;
+            if (idleTimers && idleTimers.has(guildId)) {
+                clearTimeout(idleTimers.get(guildId));
+                idleTimers.delete(guildId);
+            }
+
+            // On vide la file et on quitte
+            client.queues.delete(guildId);
+            await shoukaku.leaveVoiceChannel(guildId);
+
+            const content = `⏹️ Musique arrêtée par <@${interaction.user.id}> !`;
+
+            if (interaction.isButton()) return interaction.reply({ content });
+            return interaction.reply({ content });
+
+        } catch (e) {
+            console.error(e);
+            const errorMsg = "❌ Erreur lors de l'arrêt.";
+            if (interaction.replied || interaction.deferred) return interaction.followUp(errorMsg);
+            return interaction.reply(errorMsg);
         }
-
-        client.queues.delete(guildId);
-        await shoukaku.leaveVoiceChannel(guildId);
-
-        const content = `⏹️ Musique arrêtée par <@${interaction.user.id}> !`;
-        return interaction.reply({ content });
     },
 };
