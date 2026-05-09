@@ -109,3 +109,9 @@ dist
 /src/generated/prisma
 
 lavalink/application.yml
+
+dev.db
+
+/prisma/migrations
+
+/src/generated/client/libquery_engine-debian-openssl-3.0.x.so.node
