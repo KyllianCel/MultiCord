@@ -55,6 +55,7 @@ export default {
 
         if (!voiceChannel) return interaction.reply({ content: "❌ Tu dois être en vocal !", flags: [MessageFlags.Ephemeral] });
 
+        // Annulation du timer d'inactivité si une commande est tapée
         if (idleTimers.has(guildId)) {
             clearTimeout(idleTimers.get(guildId));
             idleTimers.delete(guildId);
@@ -83,19 +84,32 @@ export default {
 
         const botInVoice = interaction.guild?.members.me?.voice.channelId;
 
+        // Le bot est déjà dans le salon
         if (player && queue && botInVoice) {
+            await interaction.deferReply();
+            
             const track = await getTrack(query);
-            if (!track) return interaction.reply({ content: "❌ Musique premium/preview bloquée.", flags: [MessageFlags.Ephemeral] });
+            if (!track) return interaction.editReply("❌ Musique premium/preview bloquée.");
 
             queue.tracks.push({ trackData: track, requester: interaction.user });
+
+            // Si c'est la seule musique, on lance la lecture immédiatement
+            if (queue.tracks.length === 1) {
+                await player.playTrack({ track: { encoded: track.encoded } });
+                return this.sendNewCard(client, guildId, track, interaction.user, interaction);
+            }
+
+            // Sinon, on met à jour la carte actuelle si elle existe
             if (queue.message) {
                 const current = queue.tracks[0];
                 const { embed, row } = this.generateCardData(client, guildId, current.trackData, current.requester);
                 await queue.message.edit({ embeds: [embed], components: [row] }).catch(() => {});
             }
-            return interaction.reply({ content: `✅ **${track.info.title}** ajouté par <@${interaction.user.id}> !` });
+            
+            return interaction.editReply(`✅ **${track.info.title}** ajouté à la file par <@${interaction.user.id}> !`);
         }
 
+        // Première connexion ou bot déconnecté
         await interaction.deferReply();
 
         try {
@@ -130,6 +144,7 @@ export default {
                     await player.playTrack({ track: { encoded: next.trackData.encoded } });
                     this.sendNewCard(client, guildId, next.trackData, next.requester);
                 } else {
+                    // Timer d'inactivité avant de partir
                     const timeout = setTimeout(async () => {
                         client.queues.delete(guildId);
                         await shoukaku.leaveVoiceChannel(guildId);
@@ -181,7 +196,7 @@ export default {
         const { embed, row } = this.generateCardData(client, guildId, track, requester);
 
         let msg;
-        if (interaction && interaction.deferred) {
+        if (interaction && (interaction.deferred || interaction.replied)) {
             msg = await interaction.editReply({ embeds: [embed], components: [row] });
         } else {
             msg = await queue.channel.send({ embeds: [embed], components: [row] });
